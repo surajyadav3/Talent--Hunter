@@ -10,7 +10,7 @@ const __dirname=path.resolve()
 app.get("/health",(req,res) =>{
      res.status(200).json({msg:"API  is up and running"})
 });
-app.get("/books",(req,res) =>{
+app.get("/logs",(req,res) =>{
      res.status(200).json({msg:"This is the books endpoint"})
 });
 
