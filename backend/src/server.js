@@ -3,7 +3,7 @@ import path from "path";
 import {ENV} from "./lib/env.js";
 import { connect } from "http2";
 import { connectDB } from "./lib/db.js";
-import cors from cors;
+import cors from "cors";
 import {serve} from "inngest/express";
 
 const app = express();
