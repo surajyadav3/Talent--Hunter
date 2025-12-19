@@ -339,6 +339,195 @@ print(maxArea([1,1]))  # Expected: 1`,
             java: "49\n1",
         },
     },
+    "longest-substring-without-repeating-characters": {
+        id: "longest-substring-without-repeating-characters",
+        title: "Longest Substring Without Repeating Characters",
+        difficulty: "Medium",
+        category: "String • Sliding Window",
+        description: {
+            text: "Given a string s, find the length of the longest substring without repeating characters.",
+            notes: ["A substring is a contiguous sequence of characters within a string."],
+        },
+        examples: [
+            {
+                input: 's = "abcabcbb"',
+                output: "3",
+                explanation: 'The answer is "abc", with the length of 3.',
+            },
+            {
+                input: 's = "bbbbb"',
+                output: "1",
+                explanation: 'The answer is "b", with the length of 1.',
+            },
+            {
+                input: 's = "pwwkew"',
+                output: "3",
+                explanation:
+                    'The answer is "wke", with the length of 3. Note that the answer must be a substring, "pwke" is a subsequence and not a substring.',
+            },
+        ],
+        constraints: [
+            "0 ≤ s.length ≤ 5 * 10⁴",
+            "s consists of English letters, digits, symbols and spaces.",
+        ],
+        starterCode: {
+            javascript: `function lengthOfLongestSubstring(s) {
+  // Write your solution here
+  
+}
+
+// Test cases
+console.log(lengthOfLongestSubstring("abcabcbb")); // Expected: 3
+console.log(lengthOfLongestSubstring("bbbbb")); // Expected: 1
+console.log(lengthOfLongestSubstring("pwwkew")); // Expected: 3`,
+            python: `def lengthOfLongestSubstring(s):
+    # Write your solution here
+    pass
+
+# Test cases
+print(lengthOfLongestSubstring("abcabcbb"))  # Expected: 3
+print(lengthOfLongestSubstring("bbbbb"))  # Expected: 1
+print(lengthOfLongestSubstring("pwwkew"))  # Expected: 3`,
+            java: `import java.util.*;
+
+class Solution {
+    public static int lengthOfLongestSubstring(String s) {
+        // Write your solution here
+        
+        return 0;
+    }
+    
+    public static void main(String[] args) {
+        System.out.println(lengthOfLongestSubstring("abcabcbb")); // Expected: 3
+        System.out.println(lengthOfLongestSubstring("bbbbb")); // Expected: 1
+        System.out.println(lengthOfLongestSubstring("pwwkew")); // Expected: 3
+    }
+}`,
+        },
+        expectedOutput: {
+            javascript: "3\n1\n3",
+            python: "3\n1\n3",
+            java: "3\n1\n3",
+        },
+    },
+    "valid-parentheses": {
+        id: "valid-parentheses",
+        title: "Valid Parentheses",
+        difficulty: "Easy",
+        category: "String • Stack",
+        description: {
+            text: "Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.",
+            notes: [
+                "Open brackets must be closed by the same type of brackets.",
+                "Open brackets must be closed in the correct order.",
+                "Every close bracket has a corresponding open bracket of the same type.",
+            ],
+        },
+        examples: [
+            { input: 's = "()"', output: "true" },
+            { input: 's = "()[]{}"', output: "true" },
+            { input: 's = "(]"', output: "false" },
+            { input: 's = "([])"', output: "true" },
+        ],
+        constraints: ["1 ≤ s.length ≤ 10⁴", "s consists of parentheses only '()[]{}'."],
+        starterCode: {
+            javascript: `function isValid(s) {
+  // Write your solution here
+  
+}
+
+// Test cases
+console.log(isValid("()")); // Expected: true
+console.log(isValid("()[]{}")); // Expected: true
+console.log(isValid("(]")); // Expected: false
+console.log(isValid("([])")); // Expected: true`,
+            python: `def isValid(s):
+    # Write your solution here
+    pass
+
+# Test cases
+print(isValid("()"))  # Expected: True
+print(isValid("()[]{}"))  # Expected: True
+print(isValid("(]"))  # Expected: False
+print(isValid("([])"))  # Expected: True`,
+            java: `import java.util.*;
+
+class Solution {
+    public static boolean isValid(String s) {
+        // Write your solution here
+        
+        return false;
+    }
+    
+    public static void main(String[] args) {
+        System.out.println(isValid("()")); // Expected: true
+        System.out.println(isValid("()[]{}")); // Expected: true
+        System.out.println(isValid("(]")); // Expected: false
+        System.out.println(isValid("([])")); // Expected: true
+    }
+}`,
+        },
+        expectedOutput: {
+            javascript: "true\ntrue\nfalse\ntrue",
+            python: "True\nTrue\nFalse\nTrue",
+            java: "true\ntrue\nfalse\ntrue",
+        },
+    },
+    "valid-triangles": {
+        id: "valid-triangles",
+        title: "Valid Triangles",
+        difficulty: "Easy",
+        category: "Basic Logic • Geometry",
+        description: {
+            text: "Given the three angles of a triangle, determine if it forms a valid triangle. A triangle is considered valid if the sum of its three angles is exactly 180 degrees.",
+            notes: ["All angles must be greater than 0."],
+        },
+        examples: [
+            { input: "60 60 60", output: "YES" },
+            { input: "30 40 110", output: "YES" },
+            { input: "45 45 45", output: "NO" },
+        ],
+        constraints: ["0 ≤ angle ≤ 180"],
+        starterCode: {
+            javascript: `function isValidTriangle(a, b, c) {
+  // Write your solution here
+  
+}
+
+// Test cases
+console.log(isValidTriangle(60, 60, 60)); // Expected: YES
+console.log(isValidTriangle(30, 40, 110)); // Expected: YES
+console.log(isValidTriangle(45, 45, 45)); // Expected: NO`,
+            python: `def isValidTriangle(a, b, c):
+    # Write your solution here
+    pass
+
+# Test cases
+print(isValidTriangle(60, 60, 60))  # Expected: YES
+print(isValidTriangle(30, 40, 110))  # Expected: YES
+print(isValidTriangle(45, 45, 45))  # Expected: NO`,
+            java: `import java.util.*;
+
+class Solution {
+    public static String isValidTriangle(int a, int b, int c) {
+        // Write your solution here
+        
+        return "NO";
+    }
+    
+    public static void main(String[] args) {
+        System.out.println(isValidTriangle(60, 60, 60)); // Expected: YES
+        System.out.println(isValidTriangle(30, 40, 110)); // Expected: YES
+        System.out.println(isValidTriangle(45, 45, 45)); // Expected: NO
+    }
+}`,
+        },
+        expectedOutput: {
+            javascript: "YES\nYES\nNO",
+            python: "YES\nYES\nNO",
+            java: "YES\nYES\nNO",
+        },
+    },
 };
 
 export const LANGUAGE_CONFIG = {
