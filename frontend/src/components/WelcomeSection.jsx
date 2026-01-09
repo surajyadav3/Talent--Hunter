@@ -1,36 +1,40 @@
 import { useUser } from "@clerk/clerk-react";
-import { PlusIcon } from "lucide-react";
+import { ArrowRightIcon, SparklesIcon, ZapIcon } from "lucide-react";
 
-export default function WelcomeSection({ onCreateSession }) {
+function WelcomeSection({ onCreateSession }) {
     const { user } = useUser();
 
     return (
-        <div className="relative overflow-hidden bg-base-300 pt-20 pb-40">
-            {/* Background decoration - much more subtle */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-10">
-                <div className="absolute -top-48 -left-48 w-96 h-96 bg-primary rounded-full blur-[120px]"></div>
-                <div className="absolute top-1/2 left-2/3 w-64 h-64 bg-secondary rounded-full blur-[100px]"></div>
-            </div>
-
-            <div className="container mx-auto px-6 relative z-10">
-                <div className="max-w-4xl">
-                    <h1 className="text-5xl font-extrabold mb-6 tracking-tight">
-                        Welcome back, <span className="text-primary">{user?.firstName || "Hunter"}</span>! 🏹
-                    </h1>
-                    <p className="text-xl text-base-content/70 mb-10 max-w-2xl leading-relaxed">
-                        Ready for your next coding challenge? Create a room to practice with others
-                        or review your recent sessions. Let's sharpen those skills together.
-                    </p>
-
+        <div className="relative overflow-hidden">
+            <div className="relative max-w-7xl mx-auto px-6 py-16">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                                <SparklesIcon className="w-6 h-6 text-white" />
+                            </div>
+                            <h1 className="text-5xl font-black bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+                                Welcome back, {user?.firstName || "there"}!
+                            </h1>
+                        </div>
+                        <p className="text-xl text-base-content/60 ml-16">
+                            Ready to level up your coding skills?
+                        </p>
+                    </div>
                     <button
                         onClick={onCreateSession}
-                        className="btn btn-primary btn-lg px-10 shadow-xl shadow-primary/20 hover:scale-105 transition-all group"
+                        className="group px-8 py-4 bg-gradient-to-r from-primary to-secondary rounded-2xl transition-all duration-200 hover:opacity-90"
                     >
-                        <PlusIcon className="size-6 mr-2 group-hover:rotate-90 transition-transform duration-300" />
-                        Create Coding Room
+                        <div className="flex items-center gap-3 text-white font-bold text-lg">
+                            <ZapIcon className="w-6 h-6" />
+                            <span>Create Session</span>
+                            <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        </div>
                     </button>
                 </div>
             </div>
         </div>
     );
 }
+
+export default WelcomeSection;

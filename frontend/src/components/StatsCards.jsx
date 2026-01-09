@@ -1,44 +1,36 @@
-import { UsersIcon, HistoryIcon, AwardIcon } from "lucide-react";
+import { TrophyIcon, UsersIcon } from "lucide-react";
 
-const StatCard = ({ icon: Icon, title, value, colorClass, gradientClass }) => (
-    <div className={`card bg-base-100 shadow-xl border border-base-content/5 overflow-hidden group hover:scale-[1.02] transition-transform`}>
-        <div className={`absolute top-0 right-0 w-32 h-32 -mr-16 -mt-16 rounded-full opacity-10 group-hover:opacity-20 transition-opacity ${colorClass}`}></div>
-        <div className="card-body p-6 flex-row items-center gap-6">
-            <div className={`size-14 rounded-2xl flex items-center justify-center shadow-lg ${gradientClass}`}>
-                <Icon className="size-7 text-white" />
-            </div>
-            <div>
-                <p className="text-sm font-bold text-base-content/50 uppercase tracking-widest">{title}</p>
-                <p className="text-3xl font-black">{value}</p>
-            </div>
-        </div>
-    </div>
-);
-
-export default function StatsCards({ activeSessionsCount, recentSessionsCount }) {
+function StatsCards({ activeSessionsCount, recentSessionsCount }) {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <StatCard
-                icon={UsersIcon}
-                title="Live Rooms"
-                value={activeSessionsCount || 0}
-                colorClass="bg-primary"
-                gradientClass="bg-gradient-to-br from-primary to-primary-focus"
-            />
-            <StatCard
-                icon={HistoryIcon}
-                title="My History"
-                value={recentSessionsCount || 0}
-                colorClass="bg-secondary"
-                gradientClass="bg-gradient-to-br from-secondary to-secondary-focus"
-            />
-            <StatCard
-                icon={AwardIcon}
-                title="My XP"
-                value="1,240"
-                colorClass="bg-accent"
-                gradientClass="bg-gradient-to-br from-accent to-accent-focus"
-            />
+        <div className="lg:col-span-1 grid grid-cols-1 gap-6">
+            {/* Active Count */}
+            <div className="card bg-base-100 border-2 border-primary/20 hover:border-primary/40">
+                <div className="card-body">
+                    <div className="flex items-center justify-between mb-3">
+                        <div className="p-3 bg-primary/10 rounded-2xl">
+                            <UsersIcon className="w-7 h-7 text-primary" />
+                        </div>
+                        <div className="badge badge-primary">Live</div>
+                    </div>
+                    <div className="text-4xl font-black mb-1">{activeSessionsCount}</div>
+                    <div className="text-sm opacity-60">Active Sessions</div>
+                </div>
+            </div>
+
+            {/* Recent Count */}
+            <div className="card bg-base-100 border-2 border-secondary/20 hover:border-secondary/40">
+                <div className="card-body">
+                    <div className="flex items-center justify-between mb-3">
+                        <div className="p-3 bg-secondary/10 rounded-2xl">
+                            <TrophyIcon className="w-7 h-7 text-secondary" />
+                        </div>
+                    </div>
+                    <div className="text-4xl font-black mb-1">{recentSessionsCount}</div>
+                    <div className="text-sm opacity-60">Total Sessions</div>
+                </div>
+            </div>
         </div>
     );
 }
+
+export default StatsCards;
