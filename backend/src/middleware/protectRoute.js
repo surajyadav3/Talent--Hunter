@@ -1,5 +1,6 @@
 import { requireAuth } from "@clerk/express";
 import User from "../models/User.js";
+import { upsertStreamUser } from "../lib/stream.js";
 
 export const protectRoute = [
      requireAuth(),
@@ -16,6 +17,13 @@ export const protectRoute = [
 
                // attach user to req
                req.user = user;
+
+               // Ensure user exists in Stream (fallback if Inngest hasn't run yet)
+               await upsertStreamUser({
+                    id: user.clerkId,
+                    name: user.name,
+                    image: user.profileImage,
+               });
 
                next();
           } catch (error) {
