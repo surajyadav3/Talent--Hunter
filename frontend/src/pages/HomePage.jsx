@@ -9,7 +9,7 @@ import {
   ZapIcon,
 } from "lucide-react";
 import { SignInButton } from "@clerk/clerk-react";
-import LiveStats from "../components/LiveStats";
+
 
 function HomePage() {
   return (
@@ -99,7 +99,7 @@ function HomePage() {
             </div>
 
             {/* LIVE PULSE DASHBOARD */}
-            <LiveStats />
+
           </div>
 
           {/* RIGHT IMAGE */}
