@@ -53,24 +53,21 @@ function DashboardPage() {
         <Navbar />
         <WelcomeSection onCreateSession={() => setShowCreateModal(true)} />
 
-        {/* Content area with more breathing room */}
-        <div className="container mx-auto px-6 pb-32 -mt-16 relative z-20">
-          <div className="space-y-16">
+        {/* Grid layout */}
+        <div className="container mx-auto px-6 pb-16">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <StatsCards
               activeSessionsCount={activeSessions.length}
               recentSessionsCount={recentSessions.length}
             />
-
-            <div className="grid grid-cols-1 gap-16">
-              <ActiveSessions
-                sessions={activeSessions}
-                isLoading={loadingActiveSessions}
-                isUserInSession={isUserInSession}
-              />
-
-              <RecentSessions sessions={recentSessions} isLoading={loadingRecentSessions} />
-            </div>
+            <ActiveSessions
+              sessions={activeSessions}
+              isLoading={loadingActiveSessions}
+              isUserInSession={isUserInSession}
+            />
           </div>
+
+          <RecentSessions sessions={recentSessions} isLoading={loadingRecentSessions} />
         </div>
       </div>
 
