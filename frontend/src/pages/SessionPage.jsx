@@ -7,9 +7,7 @@ import { executeCode } from "../lib/piston";
 import Navbar from "../components/Navbar";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { getDifficultyBadgeClass } from "../lib/utils";
-import { Loader2Icon, LogOutIcon, PhoneOffIcon, UsersIcon } from "lucide-react";
-
-import { Loader2Icon, LogOutIcon, PhoneOffIcon, UserPlusIcon } from "lucide-react";
+import { Loader2Icon, LogOutIcon, PhoneOffIcon, UsersIcon, UserPlusIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import CodeEditorPanel from "../components/CodeEditorPanel";
 import OutputPanel from "../components/OutputPanel";
