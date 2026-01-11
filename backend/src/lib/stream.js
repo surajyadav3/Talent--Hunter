@@ -13,9 +13,15 @@ export const chatClient = StreamChat.getInstance(apiKey, apiSecret); // will be 
 export const streamClient = new StreamClient(apiKey, apiSecret); // will be used for video calls
 
 export const upsertStreamUser = async (userData) => {
+  const cleanUser = { ...userData };
+  // Stream requires image to be a valid URL or undefined, empty string fails validation
+  if (!cleanUser.image) {
+    delete cleanUser.image;
+  }
+
   try {
-    await chatClient.upsertUser(userData);
-    console.log("Stream user upserted successfully:", userData);
+    await chatClient.upsertUser(cleanUser);
+    console.log("Stream user upserted successfully:", cleanUser);
   } catch (error) {
     console.error("Error upserting Stream user:", error);
   }

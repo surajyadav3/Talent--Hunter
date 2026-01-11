@@ -11,9 +11,19 @@ export const protectRoute = [
                if (!clerkId) return res.status(401).json({ message: "Unauthorized - invalid token" });
 
                // find user in db by clerk ID
-               const user = await User.findOne({ clerkId });
+               let user = await User.findOne({ clerkId });
 
-               if (!user) return res.status(404).json({ message: "User not found" });
+               if (!user) {
+                    // AUTO-HEAL: If user is authenticated via Clerk but not in our DB yet
+                    // We create a basic record for them so they can continue working
+                    user = await User.create({
+                         clerkId,
+                         name: "New User", // Placeholder name
+                         email: `user_${clerkId}@temporary.com`, // Placeholder email
+                         profileImage: "",
+                    });
+                    console.log("🛠️ Auto-created missing user in MongoDB for ClerkID:", clerkId);
+               }
 
                // attach user to req
                req.user = user;
