@@ -1,6 +1,6 @@
 import { StreamVideoClient } from "@stream-io/video-react-sdk";
 
-const apiKey = import.meta.env.VITE_STREAM_API_KEY;
+const apiKey = import.meta.env.VITE_STREAM_API_KEY || "55zgdgvrwn82";
 
 let client = null;
 
