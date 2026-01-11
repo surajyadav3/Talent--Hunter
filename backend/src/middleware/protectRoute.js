@@ -1,4 +1,4 @@
-import { requireAuth } from "@clerk/express";
+import { requireAuth, clerkClient } from "@clerk/express";
 import User from "../models/User.js";
 import { upsertStreamUser } from "../lib/stream.js";
 
@@ -14,15 +14,26 @@ export const protectRoute = [
                let user = await User.findOne({ clerkId });
 
                if (!user) {
-                    // AUTO-HEAL: If user is authenticated via Clerk but not in our DB yet
-                    // We create a basic record for them so they can continue working
-                    user = await User.create({
-                         clerkId,
-                         name: "New User", // Placeholder name
-                         email: `user_${clerkId}@temporary.com`, // Placeholder email
-                         profileImage: "",
-                    });
-                    console.log("🛠️ Auto-created missing user in MongoDB for ClerkID:", clerkId);
+                    // AUTO-HEAL: Fetch real user data from Clerk
+                    try {
+                         const clerkUser = await clerkClient.users.getUser(clerkId);
+                         user = await User.create({
+                              clerkId,
+                              name: `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim() || "New User",
+                              email: clerkUser.emailAddresses[0]?.emailAddress || `user_${clerkId}@temporary.com`,
+                              profileImage: clerkUser.imageUrl || "",
+                         });
+                         console.log("🛠️ Auto-healed user with real Clerk data:", user.name);
+                    } catch (clerkError) {
+                         console.error("Failed to fetch user from Clerk, using placeholder:", clerkError);
+                         // Fallback placeholder
+                         user = await User.create({
+                              clerkId,
+                              name: "New User",
+                              email: `user_${clerkId}@temporary.com`,
+                              profileImage: "",
+                         });
+                    }
                }
 
                // attach user to req
