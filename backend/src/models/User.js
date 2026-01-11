@@ -14,6 +14,10 @@ const userSchema = new mongoose.Schema({
           type: String,
           default: ""
      },
+     problemsSolved: {
+          type: Number,
+          default: 0
+     },
      clerkId: {
           type: String,
           required: true,

@@ -1,6 +1,7 @@
 import { startSession } from "mongoose"
 import { chatClient, streamClient, upsertStreamUser } from "../lib/stream.js"
 import Session from "../models/Session.js"
+import User from "../models/User.js"
 
 export async function createSession(req, res) {
      try {
@@ -178,6 +179,14 @@ export async function endSession(req, res) {
           //delete chat 
           const channel = chatClient.channel("messaging", session.callId)
           await channel.delete();
+
+          // Increment problemsSolved for host and participant
+          if (session.host) {
+               await User.findByIdAndUpdate(session.host, { $inc: { problemsSolved: 1 } });
+          }
+          if (session.participant) {
+               await User.findByIdAndUpdate(session.participant, { $inc: { problemsSolved: 1 } });
+          }
 
           session.status = "completed"
           await session.save()

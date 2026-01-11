@@ -59,9 +59,14 @@ app.get("/video-calls", protectRoute, (req, res) => {
 });
 
 // API Routes
+import userRoutes from "./routes/userRoutes.js";
+
+// ...
+
 app.use("/api/inngest", serve({ client: inngest, functions }));
 app.use("/api/chat", chatRoutes);
 app.use("/api/sessions", sessionRoutes);
+app.use("/api/users", userRoutes);
 
 // Production Static Serving
 if (ENV.NODE_ENV === "production") {
