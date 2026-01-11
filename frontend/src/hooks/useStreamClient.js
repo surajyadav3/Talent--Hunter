@@ -23,14 +23,13 @@ function useStreamClient(session, loadingSession, isHost, isParticipant) {
             try {
                 const { token, userId, userName, userImage } = await sessionApi.getStreamToken();
 
-                const client = await initializeStreamClient(
-                    {
-                        id: userId,
-                        name: userName,
-                        image: userImage,
-                    },
-                    token
-                );
+                const user = {
+                    id: userId,
+                    name: userName,
+                    image: userImage || undefined, // fallback to undefined if empty string
+                };
+
+                const client = await initializeStreamClient(user, token);
 
                 setStreamClient(client);
 
@@ -41,22 +40,15 @@ function useStreamClient(session, loadingSession, isHost, isParticipant) {
                 const apiKey = import.meta.env.VITE_STREAM_API_KEY || "55zgdgvrwn82";
                 chatClientInstance = StreamChat.getInstance(apiKey);
 
-                await chatClientInstance.connectUser(
-                    {
-                        id: userId,
-                        name: userName,
-                        image: userImage,
-                    },
-                    token
-                );
+                await chatClientInstance.connectUser(user, token);
                 setChatClient(chatClientInstance);
 
                 const chatChannel = chatClientInstance.channel("messaging", session.callId);
                 await chatChannel.watch();
                 setChannel(chatChannel);
             } catch (error) {
-                toast.error("Failed to join video call");
-                console.error("Error init call", error);
+                console.error("Error init call:", error);
+                toast.error(`Failed to join video call: ${error.message || "Unknown error"}`);
             } finally {
                 setIsInitializingCall(false);
             }
