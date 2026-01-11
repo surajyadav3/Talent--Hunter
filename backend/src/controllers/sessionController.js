@@ -26,21 +26,35 @@ export async function createSession(req, res) {
           const session = await Session.create({ problem, difficulty, host: userId, callId });
 
           //create a stream video call 
-          await streamClient.video.call("default", callId).getOrCreate({
-               data: {
-                    created_by_id: clerkId,
-                    custom: { problem, difficulty, sessionId: session._id.toString() }
-               },
-          });
+          try {
+               await streamClient.video.call("default", callId).getOrCreate({
+                    data: {
+                         created_by_id: clerkId,
+                         custom: { problem, difficulty, sessionId: session._id.toString() }
+                    },
+               });
+          } catch (videoError) {
+               console.error("Error creating Stream video call:", videoError);
+               await Session.findByIdAndDelete(session._id);
+               return res.status(500).json({ message: "Failed to initiate video call: " + videoError.message });
+          }
 
           //chat messaging 
-          const channel = chatClient.channel("messaging", callId, {
-               name: `${problem} Session`,
-               created_by_id: clerkId,
-               members: [clerkId]
-          })
+          try {
+               const channel = chatClient.channel("messaging", callId, {
+                    name: `${problem} Session`,
+                    created_by_id: clerkId,
+                    members: [clerkId]
+               })
 
-          await channel.create()
+               await channel.create()
+          } catch (chatError) {
+               console.error("Error creating Stream chat channel:", chatError);
+               await Session.findByIdAndDelete(session._id);
+               // attempt to clean up the video call we just created
+               try { await streamClient.video.call("default", callId).delete(); } catch (e) { }
+               return res.status(500).json({ message: "Failed to initiate chat channel: " + chatError.message });
+          }
 
           await session.populate("host", "name profileImage email clerkId");
 

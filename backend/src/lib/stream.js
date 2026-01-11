@@ -20,10 +20,28 @@ export const upsertStreamUser = async (userData) => {
   }
 
   try {
+    // Upsert to Chat Client
     await chatClient.upsertUser(cleanUser);
-    console.log("Stream user upserted successfully:", cleanUser);
+    console.log("Stream Chat user upserted successfully:", cleanUser.id);
   } catch (error) {
-    console.error("Error upserting Stream user:", error);
+    console.error("Error upserting Stream Chat user:", error);
+  }
+
+  try {
+    // Upsert to Video Client
+    // Note: Video SDK expects an array for upsertUsers and strict role definitions sometimes.
+    // We map id to id, name to name, image to image.
+    const videoUser = {
+      id: cleanUser.id,
+      name: cleanUser.name,
+      image: cleanUser.image, // might be undefined, which is fine
+      // role: 'user' // Default is usually 'user'
+    };
+
+    await streamClient.upsertUsers([videoUser]);
+    console.log("Stream Video user upserted successfully:", cleanUser.id);
+  } catch (error) {
+    console.error("Error upserting Stream Video user:", error);
   }
 };
 

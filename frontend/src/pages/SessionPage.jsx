@@ -7,7 +7,9 @@ import { executeCode } from "../lib/piston";
 import Navbar from "../components/Navbar";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { getDifficultyBadgeClass } from "../lib/utils";
-import { Loader2Icon, LogOutIcon, PhoneOffIcon } from "lucide-react";
+
+import { Loader2Icon, LogOutIcon, PhoneOffIcon, UserPlusIcon } from "lucide-react";
+import toast from "react-hot-toast";
 import CodeEditorPanel from "../components/CodeEditorPanel";
 import OutputPanel from "../components/OutputPanel";
 
@@ -95,6 +97,11 @@ function SessionPage() {
         }
     };
 
+    const handleCopyInviteLink = () => {
+        navigator.clipboard.writeText(window.location.href);
+        toast.success("Invite link copied to clipboard!");
+    };
+
     return (
         <div className="h-screen bg-base-100 flex flex-col">
             <Navbar />
@@ -132,6 +139,15 @@ function SessionPage() {
                                                     {session?.difficulty.slice(0, 1).toUpperCase() +
                                                         session?.difficulty.slice(1) || "Easy"}
                                                 </span>
+                                                {!session?.participant && (
+                                                    <button
+                                                        onClick={handleCopyInviteLink}
+                                                        className="btn btn-ghost btn-sm gap-2"
+                                                    >
+                                                        <UserPlusIcon className="w-4 h-4" />
+                                                        Invite
+                                                    </button>
+                                                )}
                                                 {isHost && session?.status === "active" && (
                                                     <button
                                                         onClick={handleEndSession}
