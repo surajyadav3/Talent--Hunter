@@ -7,13 +7,15 @@ import { executeCode } from "../lib/piston";
 import Navbar from "../components/Navbar";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { getDifficultyBadgeClass } from "../lib/utils";
-import { Loader2Icon, LogOutIcon, PhoneOffIcon } from "lucide-react";
+import { Loader2Icon, LogOutIcon, PhoneOffIcon, UsersIcon } from "lucide-react";
 import CodeEditorPanel from "../components/CodeEditorPanel";
 import OutputPanel from "../components/OutputPanel";
 
 import useStreamClient from "../hooks/useStreamClient";
 import { StreamCall, StreamVideo } from "@stream-io/video-react-sdk";
 import VideoCallUI from "../components/VideoCallUI";
+import { Channel, Chat, MessageInput, MessageList, Thread, Window } from "stream-chat-react";
+import "stream-chat-react/dist/css/v2/index.css";
 
 function SessionPage() {
     const navigate = useNavigate();
@@ -99,21 +101,23 @@ function SessionPage() {
         <div className="h-screen bg-base-100 flex flex-col">
             <Navbar />
 
-            <div className="flex-1">
-                <PanelGroup direction="horizontal">
-                    {/* LEFT PANEL - CODE EDITOR & PROBLEM DETAILS */}
-                    <Panel defaultSize={50} minSize={30}>
-                        <PanelGroup direction="vertical">
-                            {/* PROBLEM DSC PANEL */}
-                            <Panel defaultSize={50} minSize={20}>
-                                <div className="h-full overflow-y-auto bg-base-200">
+            <div className="flex-1 overflow-hidden">
+                <PanelGroup direction="vertical">
+                    {/* TOP SECTION: PROBLEM (LEFT), CODE (CENTER), CHAT (RIGHT) */}
+                    <Panel defaultSize={75} minSize={40}>
+                        <PanelGroup direction="horizontal">
+                            {/* LEFT PANEL - PROBLEM DETAILS */}
+                            <Panel defaultSize={30} minSize={20}>
+                                <div className="h-full overflow-y-auto bg-base-200 border-r border-base-300">
+                                    {/* ... KEEP PROBLEM DETAILS CONTENT EXACTLY AS BEFORE ... */}
                                     {/* HEADER SECTION */}
-                                    <div className="p-6 bg-base-100 border-b border-base-300">
+                                    <div className="p-6 bg-base-100 border-b border-base-300 sticky top-0 z-10">
                                         <div className="flex items-start justify-between mb-3">
                                             <div>
                                                 <h1 className="text-3xl font-bold text-base-content">
                                                     {session?.problem || "Loading..."}
                                                 </h1>
+                                                {/* ... (rest of header content) ... */}
                                                 {problemData?.category && (
                                                     <p className="text-base-content/60 mt-1">{problemData.category}</p>
                                                 )}
@@ -129,8 +133,8 @@ function SessionPage() {
                                                         session?.difficulty
                                                     )}`}
                                                 >
-                                                    {session?.difficulty.slice(0, 1).toUpperCase() +
-                                                        session?.difficulty.slice(1) || "Easy"}
+                                                    {session?.difficulty?.slice(0, 1).toUpperCase() +
+                                                        session?.difficulty?.slice(1) || "Easy"}
                                                 </span>
                                                 {isHost && session?.status === "active" && (
                                                     <button
@@ -145,9 +149,6 @@ function SessionPage() {
                                                         )}
                                                         End Session
                                                     </button>
-                                                )}
-                                                {session?.status === "completed" && (
-                                                    <span className="badge badge-ghost badge-lg">Completed</span>
                                                 )}
                                             </div>
                                         </div>
@@ -227,9 +228,10 @@ function SessionPage() {
                                 </div>
                             </Panel>
 
-                            <PanelResizeHandle className="h-2 bg-base-300 hover:bg-primary transition-colors cursor-row-resize" />
+                            <PanelResizeHandle className="w-2 bg-base-300 hover:bg-primary transition-colors cursor-col-resize" />
 
-                            <Panel defaultSize={50} minSize={20}>
+                            {/* CENTER PANEL - CODE EDITOR & OUTPUT */}
+                            <Panel defaultSize={50} minSize={30}>
                                 <PanelGroup direction="vertical">
                                     <Panel defaultSize={70} minSize={30}>
                                         <CodeEditorPanel
@@ -249,31 +251,56 @@ function SessionPage() {
                                     </Panel>
                                 </PanelGroup>
                             </Panel>
+
+                            <PanelResizeHandle className="w-2 bg-base-300 hover:bg-primary transition-colors cursor-col-resize" />
+
+                            {/* RIGHT PANEL - CHAT */}
+                            <Panel defaultSize={20} minSize={15}>
+                                {chatClient && channel ? (
+                                    <div className="h-full flex flex-col bg-base-200 border-l border-base-300">
+                                        <div className="p-3 bg-base-100 border-b border-base-300 shadow-sm">
+                                            <h3 className="font-semibold flex items-center gap-2">
+                                                <UsersIcon className="w-4 h-4" />
+                                                Session Chat
+                                            </h3>
+                                        </div>
+                                        <div className="flex-1 overflow-hidden stream-chat-dark">
+                                            <Chat client={chatClient} theme="str-chat__theme-dark">
+                                                <Channel channel={channel}>
+                                                    <Window>
+                                                        <MessageList />
+                                                        <MessageInput />
+                                                    </Window>
+                                                </Channel>
+                                            </Chat>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="h-full flex items-center justify-center bg-base-200 border-l border-base-300 text-base-content/50">
+                                        <p>Chat connecting...</p>
+                                    </div>
+                                )}
+                            </Panel>
                         </PanelGroup>
                     </Panel>
 
-                    <PanelResizeHandle className="w-2 bg-base-300 hover:bg-primary transition-colors cursor-col-resize" />
+                    <PanelResizeHandle className="h-2 bg-base-300 hover:bg-primary transition-colors cursor-row-resize" />
 
-                    {/* RIGHT PANEL - VIDEO CALLS & CHAT */}
-                    <Panel defaultSize={50} minSize={30}>
-                        <div className="h-full bg-base-200 p-4 overflow-auto">
+                    {/* BOTTOM PANEL - VIDEO CALLS & CHAT */}
+                    <Panel defaultSize={35} minSize={20}>
+                        <div className="h-full bg-base-200 p-2 overflow-hidden">
                             {isInitializingCall ? (
                                 <div className="h-full flex items-center justify-center">
                                     <div className="text-center">
-                                        <Loader2Icon className="w-12 h-12 mx-auto animate-spin text-primary mb-4" />
-                                        <p className="text-lg">Connecting to video call...</p>
+                                        <Loader2Icon className="w-8 h-8 mx-auto animate-spin text-primary mb-2" />
+                                        <p className="text-sm">Connecting to video call...</p>
                                     </div>
                                 </div>
                             ) : !streamClient || !call ? (
                                 <div className="h-full flex items-center justify-center">
-                                    <div className="card bg-base-100 shadow-xl max-w-md">
-                                        <div className="card-body items-center text-center">
-                                            <div className="w-24 h-24 bg-error/10 rounded-full flex items-center justify-center mb-4">
-                                                <PhoneOffIcon className="w-12 h-12 text-error" />
-                                            </div>
-                                            <h2 className="card-title text-2xl">Connection Failed</h2>
-                                            <p className="text-base-content/70">Unable to connect to the video call</p>
-                                        </div>
+                                    <div className="flex items-center gap-4 text-error">
+                                        <PhoneOffIcon className="w-6 h-6" />
+                                        <p className="font-semibold">Video Call Connection Failed</p>
                                     </div>
                                 </div>
                             ) : (
