@@ -28,7 +28,12 @@ const __dirname = path.resolve();
 
 //middlewares
 app.use(express.json());
-//credentials true means server allows the browser to include cookies on request
+if (ENV.NODE_ENV === "production") {
+     app.use((req, res, next) => {
+          console.log(`📡 [${req.method}] ${req.url}`);
+          next();
+     });
+}
 
 
 console.log("🔒 CORS Origin set to:", ENV.CLIENT_URL || "*");
