@@ -41,7 +41,11 @@ app.use(clerkMiddleware());//this adds auth field to request object;
 // Health check
 app.get("/health", (req, res) => {
      console.log("🔍 Health check requested");
-     res.status(200).json({ status: "UP", db: mongoose.connection.readyState });
+     res.status(200).json({
+          status: "UP",
+          db: mongoose.connection.readyState,
+          static_path: ENV.NODE_ENV === "production" ? path.resolve(process.cwd(), "frontend", "dist") : "N/A"
+     });
 });
 
 // Protected test route
@@ -56,7 +60,21 @@ app.use("/api/sessions", sessionRoutes);
 
 // Production Static Serving
 if (ENV.NODE_ENV === "production") {
-     const staticPath = path.resolve(process.cwd(), "frontend", "dist");
+     // Try to find the production build folder in multiple locations
+     const possiblePaths = [
+          path.resolve(process.cwd(), "frontend", "dist"), // If started from root
+          path.resolve(process.cwd(), "..", "frontend", "dist"), // If started from backend/
+          path.resolve(__dirname, "..", "..", "frontend", "dist") // Relative to server.js
+     ];
+
+     let staticPath = possiblePaths[0];
+     for (const p of possiblePaths) {
+          if (fs.existsSync(p)) {
+               staticPath = p;
+               break;
+          }
+     }
+
      const indexPath = path.resolve(staticPath, "index.html");
 
      console.log("📁 Production Mode: Serving static files from", staticPath);
