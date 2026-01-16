@@ -27,7 +27,8 @@ if (ENV.NODE_ENV === "production") {
     });
 }
 
-app.use(cors()); // Allow all checks for now to fix network error
+app.use(cors());
+app.options("*", cors()); // Enable preflight for all routes explicitly
 app.use(clerkMiddleware());//this adds auth field to request object;
 
 // Health check
