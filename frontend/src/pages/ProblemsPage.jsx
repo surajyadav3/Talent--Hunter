@@ -3,7 +3,7 @@ import Navbar from "../components/Navbar";
 import { useState } from "react";
 
 import { PROBLEMS } from "../data/problems";
-import { ChevronDownIcon, ChevronRightIcon, Code2Icon } from "lucide-react";
+import { ChevronDownIcon, ChevronRightIcon, Code2Icon, LockIcon, SparklesIcon } from "lucide-react";
 import { getDifficultyBadgeClass } from "../lib/utils";
 
 function ProblemsPage() {
@@ -83,12 +83,24 @@ function ProblemsPage() {
                                             >
                                                 <div className="flex items-center gap-4 min-w-0">
                                                     <div className="size-10 rounded-lg bg-base-100 flex items-center justify-center shadow-sm border border-base-300 group-hover/card:scale-110 transition-transform duration-200">
-                                                        <Code2Icon className="size-5 text-base-content/60" />
+                                                        {problem.isPremium ? (
+                                                            <LockIcon className="size-5 text-amber-500" />
+                                                        ) : (
+                                                            <Code2Icon className="size-5 text-base-content/60" />
+                                                        )}
                                                     </div>
                                                     <div className="min-w-0">
-                                                        <h3 className="font-bold text-base-content truncate group-hover/card:text-primary transition-colors">
-                                                            {problem.title}
-                                                        </h3>
+                                                        <div className="flex items-center gap-2">
+                                                            <h3 className="font-bold text-base-content truncate group-hover/card:text-primary transition-colors">
+                                                                {problem.title}
+                                                            </h3>
+                                                            {problem.isPremium && (
+                                                                <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-500 text-[10px] font-black uppercase tracking-tighter border border-amber-500/20">
+                                                                    <SparklesIcon className="size-2.5 fill-current" />
+                                                                    Premium
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                         <p className="text-xs text-base-content/50 font-medium">
                                                             {problem.category}
                                                         </p>
@@ -97,7 +109,7 @@ function ProblemsPage() {
 
                                                 <div className="flex items-center gap-3">
                                                     <span className="hidden sm:inline-block text-xs font-semibold text-primary/0 group-hover/card:text-primary/100 transition-all duration-200">
-                                                        Solve Problem
+                                                        {problem.isPremium ? "Unlock Problem" : "Solve Problem"}
                                                     </span>
                                                     <div className="size-8 rounded-full bg-base-100 flex items-center justify-center border border-base-300 group-hover/card:bg-primary group-hover/card:border-primary transition-all duration-200">
                                                         <ChevronRightIcon className="size-4 text-base-content/60 group-hover/card:text-primary-content transition-colors" />
