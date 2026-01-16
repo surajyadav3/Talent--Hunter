@@ -8,6 +8,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Import your Publishable Key
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+const API_URL = import.meta.env.VITE_API_URL;
+
+console.log("🚀 Frontend Config:", {
+  ClerkKey: PUBLISHABLE_KEY ? "Set" : "Missing",
+  ApiUrl: API_URL || "Using Default (/api)"
+});
 
 if (!PUBLISHABLE_KEY) {
   // Graceful fallback UI instead of crashing

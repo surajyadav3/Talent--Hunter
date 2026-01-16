@@ -1,3 +1,4 @@
+import express from "express";
 import { getCurrentUser, getLeaderboard, upgradeUser } from "../controllers/userController.js";
 import { protectRoute } from "../middleware/protectRoute.js";
 

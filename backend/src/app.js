@@ -45,14 +45,31 @@ app.get("/video-calls", protectRoute, (req, res) => {
     res.status(200).json({ msg: "Authorized" });
 });
 
+// Debug Logging
+app.use((req, res, next) => {
+    console.log(`📡 Request: ${req.method} ${req.url}`);
+    next();
+});
+
 // API Routes
 app.use("/api/inngest", serve({ client: inngest, functions }));
 app.use("/api/chat", chatRoutes);
 app.use("/api/sessions", sessionRoutes);
 app.use("/api/users", userRoutes);
 
+// Root Health Check
+app.get("/", (req, res) => res.json({ status: "Backend is Running!", version: "1.0.0" }));
+app.get("/api", (req, res) => res.json({ status: "API Root Reached" }));
+
+// Catch-all for API 404s to verify backend connectivity
+// In Express 5, use simple middleware at the end of API paths
+app.use("/api", (req, res) => {
+    console.log(`❌ 404 Not Found: ${req.originalUrl}`);
+    res.status(404).json({ error: "Route Not Found", path: req.originalUrl, message: "Backend reached, but endpoint missing." });
+});
+
 // Production Static Serving
-if (ENV.NODE_ENV === "production") {
+if (ENV.NODE_ENV === "production" || process.env.VERCEL) {
     // Try to find the production build folder in multiple locations
     const possiblePaths = [
         path.resolve(process.cwd(), "frontend", "dist"), // If started from root
