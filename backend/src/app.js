@@ -27,8 +27,10 @@ if (ENV.NODE_ENV === "production") {
     });
 }
 
-app.use(cors());
-app.options("*", cors()); // Enable preflight for all routes explicitly
+app.use(cors({
+    origin: ENV.CLIENT_URL || true,
+    credentials: true
+}));
 app.use(clerkMiddleware());//this adds auth field to request object;
 
 // Health check

@@ -4,10 +4,8 @@ import { useUserStatus } from "../hooks/useUserStatus";
 import toast from "react-hot-toast";
 import { useState } from "react";
 import { useAuth } from "@clerk/clerk-react";
-import axios from "axios";
+import axios from "../lib/axios";
 import { useQueryClient } from "@tanstack/react-query";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const PricingPage = () => {
     const { data: userData } = useUserStatus();
@@ -27,7 +25,7 @@ const PricingPage = () => {
         setIsVerifying(true);
         try {
             const token = await getToken();
-            await axios.post(`${API_URL}/users/upgrade`,
+            await axios.post(`/users/upgrade`,
                 { transactionId },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
