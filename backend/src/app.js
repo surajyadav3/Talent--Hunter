@@ -27,11 +27,7 @@ if (ENV.NODE_ENV === "production") {
     });
 }
 
-console.log("🔒 CORS Origin set to:", ENV.CLIENT_URL || "*");
-app.use(cors({
-    origin: ENV.CLIENT_URL || "*",
-    credentials: true
-}));
+app.use(cors()); // Allow all checks for now to fix network error
 app.use(clerkMiddleware());//this adds auth field to request object;
 
 // Health check
