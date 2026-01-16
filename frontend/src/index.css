@@ -4,11 +4,50 @@
   themes: all;
 }
 
-/* Add cursor pointer to buttons by default - this is coming from tailwind docs */
+/* Add cursor pointer to buttons by default */
 @layer base {
 
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
   }
+
+  body {
+    @apply antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/10 backdrop-blur-md border border-white/10;
+  }
+
+  /* Custom Scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-base-content/20 rounded-full hover:bg-base-content/40 transition-colors;
+  }
+
+  /* Glow effect */
+  .glow-primary {
+    filter: drop-shadow(0 0 10px theme('colors.primary.DEFAULT / 30%'));
+  }
+}
+
+/* Stream Chat Dark Integration */
+.stream-chat-dark {
+  --str-chat__primary-color: var(--p);
+  --str-chat__active-primary-color: var(--p);
+  --str-chat__surface-color: var(--b2);
+  --str-chat__secondary-surface-color: var(--b3);
+  --str-chat__border-radius-base: 12px;
 }

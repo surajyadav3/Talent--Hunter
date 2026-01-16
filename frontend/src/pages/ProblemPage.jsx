@@ -11,10 +11,13 @@ import { executeCode } from "../lib/piston";
 
 import toast from "react-hot-toast";
 import confetti from "canvas-confetti";
+import { useUserStatus } from "../hooks/useUserStatus";
+import { LockIcon, SparklesIcon } from "lucide-react";
 
 function ProblemPage() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { data: userData, isLoading: isUserLoading } = useUserStatus();
 
     const [currentProblemId, setCurrentProblemId] = useState("two-sum");
     const [selectedLanguage, setSelectedLanguage] = useState("javascript");
@@ -23,6 +26,13 @@ function ProblemPage() {
     const [isRunning, setIsRunning] = useState(false);
 
     const currentProblem = PROBLEMS[currentProblemId];
+    const isPremiumLocked = currentProblem?.isPremium && !userData?.isPremium;
+
+    if (isUserLoading) return (
+        <div className="h-screen bg-base-100 flex items-center justify-center">
+            <span className="loading loading-spinner loading-lg text-primary"></span>
+        </div>
+    );
 
     // update problem when URL param changes
     useEffect(() => {
@@ -110,7 +120,37 @@ function ProblemPage() {
         <div className="h-screen bg-base-100 flex flex-col">
             <Navbar />
 
-            <div className="flex-1">
+            <div className="flex-1 relative">
+                {isPremiumLocked && (
+                    <div className="absolute inset-0 z-50 backdrop-blur-sm bg-base-100/60 flex items-center justify-center p-4">
+                        <div className="max-w-md w-full p-8 rounded-3xl bg-base-100 border border-amber-500/20 shadow-2xl shadow-amber-500/10 text-center space-y-6">
+                            <div className="size-20 bg-amber-500/10 rounded-2xl flex items-center justify-center mx-auto">
+                                <LockIcon className="size-10 text-amber-500" />
+                            </div>
+                            <div className="space-y-2">
+                                <h2 className="text-3xl font-black tracking-tight">Premium Problem</h2>
+                                <p className="text-base-content/60 leading-relaxed">
+                                    This problem is only available to our <span className="text-amber-500 font-bold">Premium</span> members. Upgrade now to unlock 100+ exclusive coding challenges.
+                                </p>
+                            </div>
+                            <div className="flex flex-col gap-3 pt-4">
+                                <button
+                                    onClick={() => navigate("/pricing")}
+                                    className="btn btn-primary btn-lg shadow-lg shadow-primary/20 flex items-center gap-2"
+                                >
+                                    <SparklesIcon className="size-5 fill-current" />
+                                    Upgrade to Unlock
+                                </button>
+                                <button
+                                    onClick={() => navigate("/problems")}
+                                    className="btn btn-ghost"
+                                >
+                                    Back to Problems
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
                 <PanelGroup direction="horizontal">
                     {/* left panel- problem desc */}
                     <Panel defaultSize={40} minSize={30}>

@@ -8,6 +8,7 @@ import ProblemPage from "./pages/ProblemPage";
 import ProblemsPage from "./pages/ProblemsPage";
 import LeaderboardPage from "./pages/LeaderboardPage";
 import SessionPage from "./pages/SessionPage";
+import PricingPage from "./pages/PricingPage";
 
 function App() {
   const { isSignedIn, isLoaded } = useUser();
@@ -25,6 +26,7 @@ function App() {
         <Route path="/leaderboard" element={isSignedIn ? <LeaderboardPage /> : <Navigate to={"/"} />} />
         <Route path="/problem/:id" element={isSignedIn ? <ProblemPage /> : <Navigate to={"/"} />} />
         <Route path="/session/:id" element={isSignedIn ? <SessionPage /> : <Navigate to={"/"} />} />
+        <Route path="/pricing" element={isSignedIn ? <PricingPage /> : <Navigate to={"/"} />} />
       </Routes>
 
       <Toaster toastOptions={{ duration: 3000 }} />

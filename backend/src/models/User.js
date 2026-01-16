@@ -23,6 +23,15 @@ const userSchema = new mongoose.Schema({
           required: true,
           unique: true,
      },
+     isPremium: {
+          type: Boolean,
+          default: false
+     },
+     subscriptionTier: {
+          type: String,
+          enum: ["free", "pro", "elite"],
+          default: "free"
+     }
 },
      { timestamps: true } //created at;
 );
