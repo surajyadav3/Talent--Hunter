@@ -2,6 +2,7 @@ import { useNavigate } from "react-router";
 import { useUser } from "@clerk/clerk-react";
 import { useState } from "react";
 import { useActiveSessions, useCreateSession, useMyRecentSessions } from "../hooks/useSessions";
+import toast from "react-hot-toast";
 
 import Navbar from "../components/Navbar";
 import WelcomeSection from "../components/WelcomeSection";
@@ -31,15 +32,26 @@ function DashboardPage() {
       },
       {
         onSuccess: (data) => {
+          console.log("✅ Session Created Response:", data);
           setShowCreateModal(false);
-          navigate(`/session/${data.session._id}`);
+
+          if (data?.session?._id) {
+            navigate(`/session/${data.session._id}`);
+          } else {
+            console.error("❌ Session object or _id missing from response:", data);
+            toast.error("Session created, but failed to navigate. Please refresh the dashboard.");
+          }
         },
       }
     );
   };
 
-  const activeSessions = activeSessionsData?.sessions || [];
-  const recentSessions = recentSessionsData?.sessions || [];
+  const activeSessions = Array.isArray(activeSessionsData?.sessions)
+    ? activeSessionsData.sessions.filter(s => s && s._id)
+    : [];
+  const recentSessions = Array.isArray(recentSessionsData?.sessions)
+    ? recentSessionsData.sessions.filter(s => s && s._id)
+    : [];
 
   const isUserInSession = (session) => {
     if (!user.id) return false;

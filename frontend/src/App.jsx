@@ -9,6 +9,7 @@ import ProblemsPage from "./pages/ProblemsPage";
 import LeaderboardPage from "./pages/LeaderboardPage";
 import SessionPage from "./pages/SessionPage";
 import PricingPage from "./pages/PricingPage";
+import SyncAuth from "./components/SyncAuth";
 
 function App() {
   const { isSignedIn, isLoaded } = useUser();
@@ -18,6 +19,7 @@ function App() {
 
   return (
     <>
+      <SyncAuth />
       <Routes>
         <Route path="/" element={!isSignedIn ? <HomePage /> : <Navigate to={"/dashboard"} />} />
         <Route path="/dashboard" element={isSignedIn ? <DashboardPage /> : <Navigate to={"/"} />} />
