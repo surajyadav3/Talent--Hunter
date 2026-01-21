@@ -1,6 +1,6 @@
 import { useUser } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useParams, useBlocker } from "react-router";
 import { useEndSession, useJoinSession, useSessionById } from "../hooks/useSessions";
 import { PROBLEMS } from "../data/problems";
 import { executeCode } from "../lib/piston";
@@ -50,6 +50,8 @@ function SessionPage() {
     const [code, setCode] = useState(problemData?.starterCode?.[selectedLanguage] || "");
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [unreadMessages, setUnreadMessages] = useState(0);
+    const [sessionSubmitted, setSessionSubmitted] = useState(false);
+    const [timeLeft, setTimeLeft] = useState(180); // 3 minutes in seconds
 
     // auto-join session if user is not already a participant and not the host
     useEffect(() => {
@@ -65,15 +67,48 @@ function SessionPage() {
     useEffect(() => {
         if (!session || loadingSession) return;
 
-        if (session.status === "completed") navigate("/dashboard");
+        if (session.status === "completed") {
+            // If we were blocked, we should probably reset or bypass it
+            navigate("/dashboard");
+        }
     }, [session, loadingSession, navigate]);
 
-    // update code when problem loads or changes
+    // Navigation Blocker for participants
+    const shouldBlock = isParticipant && session?.status === "active" && !sessionSubmitted;
+
+    const blocker = useBlocker(
+        ({ nextLocation }) =>
+            shouldBlock && nextLocation.pathname !== `/session/${id}`
+    );
+
     useEffect(() => {
-        if (problemData?.starterCode?.[selectedLanguage]) {
-            setCode(problemData.starterCode[selectedLanguage]);
+        if (blocker.state === "blocked") {
+            toast.error("Participants cannot leave the session until it is ended by the host.");
+            blocker.reset();
         }
-    }, [problemData, selectedLanguage]);
+    }, [blocker]);
+
+    // Browser-level block (refresh/close tab)
+    useEffect(() => {
+        const handleBeforeUnload = (e) => {
+            if (shouldBlock) {
+                e.preventDefault();
+                e.returnValue = "";
+            }
+        };
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    }, [shouldBlock]);
+
+    // update code when problem loads or changes (Only on initial load)
+    const [hasInitializedCode, setHasInitializedCode] = useState(false);
+    useEffect(() => {
+        if (problemData?.starterCode?.[selectedLanguage] && !hasInitializedCode) {
+            setCode(problemData.starterCode[selectedLanguage]);
+            setHasInitializedCode(true);
+        }
+    }, [problemData, selectedLanguage, hasInitializedCode]);
 
     const handleLanguageChange = (e) => {
         const newLang = e.target.value;
@@ -82,6 +117,15 @@ function SessionPage() {
         const starterCode = problemData?.starterCode?.[newLang] || "";
         setCode(starterCode);
         setOutput(null);
+
+        // Immediate sync for language change
+        if (isParticipant && channel) {
+            channel.sendEvent({
+                type: "code-update",
+                code: starterCode,
+                language: newLang,
+            });
+        }
     };
 
     const handleRunCode = async () => {
@@ -131,8 +175,7 @@ function SessionPage() {
         toast.success("Invite link copied to clipboard!");
     };
 
-    const [sessionSubmitted, setSessionSubmitted] = useState(false);
-    const [timeLeft, setTimeLeft] = useState(180); // 3 minutes in seconds
+
 
     useEffect(() => {
         if (sessionSubmitted && timeLeft > 0) {
@@ -226,10 +269,54 @@ function SessionPage() {
         if (isChatOpen) setUnreadMessages(0);
     }, [isChatOpen]);
 
+    // CODE SYNCHRONIZATION (Participant -> Host)
+    // 1. Debounced broadcast of code changes
+    useEffect(() => {
+        if (!isParticipant || !channel || !code) return;
+
+        const timeout = setTimeout(() => {
+            channel.sendEvent({
+                type: "code-update",
+                code,
+                language: selectedLanguage,
+            });
+        }, 500); // 500ms debounce for smooth typing view
+
+        return () => clearTimeout(timeout);
+    }, [code, selectedLanguage, isParticipant, channel]);
+
+    // 2. Listen for code updates (Primary for Host)
+    useEffect(() => {
+        if (!channel || !user?.id) return;
+
+        const handleCodeSync = (event) => {
+            // Only process events from OTHER users
+            if (event.type === "code-update" && event.user.id !== user.id) {
+                console.log("📥 Received code sync:", event.language);
+
+                if (event.language !== undefined) {
+                    setSelectedLanguage(event.language);
+                }
+                if (event.code !== undefined) {
+                    setCode(event.code);
+                }
+            }
+        };
+
+        const { unsubscribe } = channel.on("code-update", handleCodeSync);
+        return () => {
+            if (unsubscribe) unsubscribe();
+        };
+    }, [channel, user?.id]); // Removed code/language from deps to prevent closure issues and multiple listeners
+
 
     return (
         <div className="h-screen bg-base-100 flex flex-col">
-            <Navbar />
+            <Navbar
+                isInSession={true}
+                isParticipant={isParticipant}
+                sessionActive={session?.status === "active" && !sessionSubmitted}
+            />
 
             {sessionSubmitted ? (
                 <div className="flex-1 flex flex-col overflow-hidden relative">

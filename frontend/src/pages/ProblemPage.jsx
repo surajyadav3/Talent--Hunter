@@ -28,12 +28,6 @@ function ProblemPage() {
     const currentProblem = PROBLEMS[currentProblemId];
     const isPremiumLocked = currentProblem?.isPremium && !userData?.isPremium;
 
-    if (isUserLoading) return (
-        <div className="h-screen bg-base-100 flex items-center justify-center">
-            <span className="loading loading-spinner loading-lg text-primary"></span>
-        </div>
-    );
-
     // update problem when URL param changes
     useEffect(() => {
         if (id && PROBLEMS[id]) {
@@ -42,6 +36,12 @@ function ProblemPage() {
             setOutput(null);
         }
     }, [id, selectedLanguage]);
+
+    if (isUserLoading) return (
+        <div className="h-screen bg-base-100 flex items-center justify-center">
+            <span className="loading loading-spinner loading-lg text-primary"></span>
+        </div>
+    );
 
     const handleLanguageChange = (e) => {
         const newLang = e.target.value;
@@ -176,6 +176,8 @@ function ProblemPage() {
                                     onLanguageChange={handleLanguageChange}
                                     onCodeChange={setCode}
                                     onRunCode={handleRunCode}
+                                    onSubmit={() => navigate("/problems")}
+                                    submitLabel="Done"
                                 />
                             </Panel>
 

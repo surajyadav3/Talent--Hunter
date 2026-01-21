@@ -131,6 +131,41 @@ function HomePage() {
               </div>
             ))}
           </div>
+
+          {/* ADDED SECTION FOR PROBLEMS, DASHBOARD, LEADERBOARD */}
+          <div className="mt-24 p-12 rounded-[3rem] bg-gradient-to-br from-base-200/50 via-base-200/20 to-transparent border border-white/5 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -mr-32 -mt-32"></div>
+
+            <div className="relative z-10 text-center space-y-8">
+              <h3 className="text-3xl font-black">Explore Our Platform</h3>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                <div className="p-6 rounded-2xl bg-base-100/50 border border-white/5">
+                  <div className="text-primary font-black text-lg mb-1">Problems</div>
+                  <p className="text-xs text-base-content/50">Curated coding challenges</p>
+                </div>
+                <div className="p-6 rounded-2xl bg-base-100/50 border border-white/5">
+                  <div className="text-secondary font-black text-lg mb-1">Dashboard</div>
+                  <p className="text-xs text-base-content/50">Track your progress</p>
+                </div>
+                <div className="p-6 rounded-2xl bg-base-100/50 border border-white/5">
+                  <div className="text-accent font-black text-lg mb-1">Leaderboard</div>
+                  <p className="text-xs text-base-content/50">Compete with others</p>
+                </div>
+              </div>
+
+              <div className="pt-4">
+                <SignInButton mode="modal">
+                  <button className="btn btn-primary btn-lg rounded-2xl shadow-xl shadow-primary/20 hover:scale-105 transition-all px-12">
+                    Get Started Now
+                  </button>
+                </SignInButton>
+                <p className="text-[10px] uppercase font-bold text-base-content/30 mt-4 tracking-widest">
+                  Join 10,000+ developers today
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </main>
     </div>
