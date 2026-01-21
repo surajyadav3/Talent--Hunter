@@ -16,9 +16,8 @@ const PricingPage = lazy(() => import("./pages/PricingPage"));
 
 // Loading fallback component
 const PageLoader = () => (
-  <div className="min-h-screen flex flex-col items-center justify-center bg-base-100 italic text-xs">
-    <div className="loading loading-spinner loading-lg text-primary mb-4"></div>
-    <div className="font-mono uppercase tracking-[0.2em] opacity-50 animate-pulse">Initializing Experience...</div>
+  <div className="min-h-screen flex items-center justify-center bg-base-100">
+    <div className="loading loading-spinner loading-lg text-primary"></div>
   </div>
 );
 
