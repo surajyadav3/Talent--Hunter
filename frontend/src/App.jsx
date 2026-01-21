@@ -14,24 +14,16 @@ const LeaderboardPage = lazy(() => import("./pages/LeaderboardPage"));
 const SessionPage = lazy(() => import("./pages/SessionPage"));
 const PricingPage = lazy(() => import("./pages/PricingPage"));
 
-// Loading fallback component
-const PageLoader = () => (
-  <div className="min-h-screen flex flex-col items-center justify-center bg-base-100 italic text-xs">
-    <div className="loading loading-spinner loading-lg text-primary mb-4"></div>
-    <div className="font-mono uppercase tracking-[0.2em] opacity-50 animate-pulse">Initializing Experience...</div>
-  </div>
-);
-
 function App() {
   const { isSignedIn, isLoaded } = useUser();
 
-  // this will get rid of the flickering effect
-  if (!isLoaded) return <PageLoader />;
+  // this will provide a cleaner transition
+  if (!isLoaded) return null;
 
   return (
     <>
       <SyncAuth />
-      <Suspense fallback={<PageLoader />}>
+      <Suspense fallback={null}>
         <Routes>
           <Route path="/" element={!isSignedIn ? <HomePage /> : <Navigate to={"/dashboard"} />} />
           <Route path="/dashboard" element={isSignedIn ? <DashboardPage /> : <Navigate to={"/"} />} />
