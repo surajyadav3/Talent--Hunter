@@ -10,6 +10,7 @@ function CodeEditorPanel({
     onCodeChange,
     onRunCode,
     onSubmit,
+    submitLabel = "Submit",
     readOnly,
 }) {
     return (
@@ -47,7 +48,7 @@ function CodeEditorPanel({
                         )}
                     </button>
                     <button className="btn btn-success btn-sm gap-2 shadow-lg shadow-success/20 font-bold" disabled={isRunning} onClick={onSubmit}>
-                        Submit
+                        {submitLabel}
                     </button>
                 </div>
             </div>

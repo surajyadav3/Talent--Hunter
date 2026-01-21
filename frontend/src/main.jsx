@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.jsx";
 import { ClerkProvider } from "@clerk/clerk-react";
-import { BrowserRouter } from "react-router";
+import { createBrowserRouter, RouterProvider } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Import your Publishable Key
@@ -40,14 +40,14 @@ if (!PUBLISHABLE_KEY) {
 
 const queryClient = new QueryClient();
 
+const router = createBrowserRouter([{ path: "*", element: <App /> }]);
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
-        <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
-          <App />
-        </ClerkProvider>
-      </QueryClientProvider>
-    </BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+        <RouterProvider router={router} />
+      </ClerkProvider>
+    </QueryClientProvider>
   </StrictMode>
 );

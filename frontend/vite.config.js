@@ -8,10 +8,22 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:5000', // Default local backend port
+        target: 'http://localhost:5000',
         changeOrigin: true,
         secure: false,
       }
     }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'clerk-vendor': ['@clerk/clerk-react'],
+          'stream-vendor': ['@stream-io/video-react-sdk', 'stream-chat', 'stream-chat-react'],
+          'ui-vendor': ['lucide-react', 'canvas-confetti', 'react-hot-toast'],
+        }
+      }
+    },
+    chunkSizeWarningLimit: 1000, // Slightly increase limit due to heavy SDKs
   }
 })
