@@ -1,5 +1,5 @@
 import { useUser } from "@clerk/clerk-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams, useBlocker } from "react-router";
 import { useEndSession, useJoinSession, useSessionById } from "../hooks/useSessions";
 import { PROBLEMS } from "../data/problems";
@@ -110,7 +110,7 @@ function SessionPage() {
         }
     }, [problemData, selectedLanguage, hasInitializedCode]);
 
-    const handleLanguageChange = (e) => {
+    const handleLanguageChange = useCallback((e) => {
         const newLang = e.target.value;
         setSelectedLanguage(newLang);
         // use problem-specific starter code
@@ -126,9 +126,9 @@ function SessionPage() {
                 language: newLang,
             });
         }
-    };
+    }, [problemData, isParticipant, channel]);
 
-    const handleRunCode = async () => {
+    const handleRunCode = useCallback(async () => {
         setIsRunning(true);
 
         let codeToRun = code;
@@ -161,7 +161,7 @@ function SessionPage() {
         } finally {
             setIsRunning(false);
         }
-    };
+    }, [code, selectedLanguage, problemData]);
 
     const handleEndSession = () => {
         if (confirm("Are you sure you want to end this session? All participants will be notified.")) {
@@ -522,8 +522,8 @@ function SessionPage() {
                                     <XIcon className="w-4 h-4" />
                                 </button>
                             </div>
-                            <div className="flex-1 overflow-hidden stream-chat-dark text-xs">
-                                <Chat client={chatClient} theme="str-chat__theme-dark">
+                            <div className={`flex-1 overflow-hidden text-xs ${document.documentElement.getAttribute("data-theme") === "winter" ? "stream-chat-light" : "stream-chat-dark"}`}>
+                                <Chat client={chatClient} theme={document.documentElement.getAttribute("data-theme") === "winter" ? "str-chat__theme-light" : "str-chat__theme-dark"}>
                                     <Channel channel={channel}>
                                         <Window>
                                             <MessageList />

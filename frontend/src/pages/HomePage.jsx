@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router";
 import {
   ArrowRightIcon,
@@ -7,11 +8,14 @@ import {
   UsersIcon,
   VideoIcon,
   ZapIcon,
+  XIcon,
 } from "lucide-react";
 import { SignInButton } from "@clerk/clerk-react";
 import Navbar from "../components/Navbar";
 
 function HomePage() {
+  const [showDemo, setShowDemo] = useState(false);
+
   return (
     <div className="min-h-screen bg-base-100 flex flex-col selection:bg-primary/20">
       <Navbar />
@@ -64,7 +68,10 @@ function HomePage() {
                     </button>
                   </SignInButton>
 
-                  <button className="btn btn-ghost btn-lg border border-white/10 hover:bg-white/5">
+                  <button
+                    onClick={() => setShowDemo(true)}
+                    className="btn btn-ghost btn-lg border border-white/10 hover:bg-white/5"
+                  >
                     <VideoIcon className="size-5" />
                     Watch Demo
                   </button>
@@ -104,6 +111,7 @@ function HomePage() {
 
         {/* FEATURES SECTION */}
         <div className="max-w-7xl mx-auto px-4 py-24">
+          {/* ... existing features code ... */}
           <div className="text-center mb-20">
             <h2 className="text-4xl lg:text-5xl font-extrabold mb-6 tracking-tight">
               Everything You Need to <span className="text-primary italic font-mono">Succeed</span>
@@ -113,7 +121,6 @@ function HomePage() {
             </p>
           </div>
 
-          {/* FEATURES GRID */}
           <div className="grid md:grid-cols-3 gap-8">
             {[
               { icon: VideoIcon, title: "HD Video Call", desc: "Crystal clear video and audio for seamless communication during interviews" },
@@ -132,7 +139,6 @@ function HomePage() {
             ))}
           </div>
 
-          {/* ADDED SECTION FOR PROBLEMS, DASHBOARD, LEADERBOARD */}
           <div className="mt-24 p-12 rounded-[3rem] bg-gradient-to-br from-base-200/50 via-base-200/20 to-transparent border border-white/5 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -mr-32 -mt-32"></div>
 
@@ -168,6 +174,33 @@ function HomePage() {
           </div>
         </div>
       </main>
+
+      {/* DEMO MODAL */}
+      {showDemo && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-base-300/60 backdrop-blur-xl animate-in fade-in duration-300"
+            onClick={() => setShowDemo(false)}
+          />
+          <div className="relative w-full max-w-5xl aspect-video rounded-3xl overflow-hidden shadow-2xl border border-white/10 bg-base-100 animate-in zoom-in-95 duration-300">
+            <button
+              onClick={() => setShowDemo(false)}
+              className="absolute top-4 right-4 z-10 p-2 rounded-full bg-base-300/50 hover:bg-base-300 transition-colors"
+            >
+              <XIcon className="size-6" />
+            </button>
+            <iframe
+              src="https://www.youtube.com/embed/KGNv-wAJAmc?autoplay=1"
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+              className="w-full h-full"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

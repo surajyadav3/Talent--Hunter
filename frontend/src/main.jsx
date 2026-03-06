@@ -38,7 +38,16 @@ if (!PUBLISHABLE_KEY) {
   throw new Error("Missing Clerk Publishable Key - Rendered Fallback UI");
 }
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30_000,           // Data stays fresh for 30 seconds by default
+      gcTime: 5 * 60 * 1000,      // Garbage collect after 5 minutes
+      retry: 1,                    // Only retry once on failure (not 3 times!)
+      refetchOnWindowFocus: false, // Don't refetch when user switches tabs
+    },
+  },
+});
 
 const router = createBrowserRouter([{ path: "*", element: <App /> }]);
 

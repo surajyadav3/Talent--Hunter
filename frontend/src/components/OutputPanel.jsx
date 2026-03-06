@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import { CheckCircle2Icon, XCircleIcon, TerminalIcon, CpuIcon } from "lucide-react";
 
-function OutputPanel({ output, expectedOutput, testCases = [] }) {
+const OutputPanel = memo(function OutputPanel({ output, expectedOutput, testCases = [] }) {
     const [activeTab, setActiveTab] = useState("test-results");
 
     // Process output to extract test results if they exist
@@ -159,5 +159,5 @@ function OutputPanel({ output, expectedOutput, testCases = [] }) {
             </div>
         </div>
     );
-}
+});
 export default OutputPanel;
