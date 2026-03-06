@@ -1,8 +1,9 @@
+import { memo, useEffect, useState } from "react";
 import Editor from "@monaco-editor/react";
 import { Loader2Icon, PlayIcon } from "lucide-react";
 import { LANGUAGE_CONFIG } from "../data/problems";
 
-function CodeEditorPanel({
+const CodeEditorPanel = memo(function CodeEditorPanel({
     selectedLanguage,
     code,
     isRunning,
@@ -13,6 +14,24 @@ function CodeEditorPanel({
     submitLabel = "Submit",
     readOnly,
 }) {
+    // Determine editor theme based on current attribute
+    const [editorTheme, setEditorTheme] = useState("vs-dark");
+
+    useEffect(() => {
+        const observer = new MutationObserver(() => {
+            const theme = document.documentElement.getAttribute("data-theme");
+            setEditorTheme(theme === "winter" ? "light" : "vs-dark");
+        });
+
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+        // Initial set
+        const currentTheme = document.documentElement.getAttribute("data-theme");
+        setEditorTheme(currentTheme === "winter" ? "light" : "vs-dark");
+
+        return () => observer.disconnect();
+    }, []);
+
     return (
         <div className="h-full bg-base-300 flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-4 py-2 bg-base-100/50 backdrop-blur-md border-b border-base-content/5">
@@ -59,7 +78,7 @@ function CodeEditorPanel({
                     language={LANGUAGE_CONFIG[selectedLanguage].monacoLang}
                     value={code}
                     onChange={onCodeChange}
-                    theme="vs-dark"
+                    theme={editorTheme}
                     options={{
                         fontSize: 16,
                         lineNumbers: "on",
@@ -72,5 +91,5 @@ function CodeEditorPanel({
             </div>
         </div>
     );
-}
+});
 export default CodeEditorPanel;

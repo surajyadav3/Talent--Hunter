@@ -23,7 +23,11 @@ function App() {
   return (
     <>
       <SyncAuth />
-      <Suspense fallback={null}>
+      <Suspense fallback={
+        <div className="h-screen w-full flex items-center justify-center bg-base-300">
+          <span className="loading loading-spinner loading-lg text-primary"></span>
+        </div>
+      }>
         <Routes>
           <Route path="/" element={!isSignedIn ? <HomePage /> : <Navigate to={"/dashboard"} />} />
           <Route path="/dashboard" element={isSignedIn ? <DashboardPage /> : <Navigate to={"/"} />} />

@@ -1,55 +1,52 @@
 import { useEffect, useState } from "react";
-import { MoonIcon, SunIcon, PaletteIcon } from "lucide-react";
-
-const themes = [
-    { name: "night", icon: MoonIcon, label: "Dark" },
-    { name: "winter", icon: SunIcon, label: "Light" },
-    { name: "dracula", icon: PaletteIcon, label: "Vibrant" },
-    { name: "nord", icon: PaletteIcon, label: "Nord" },
-];
+import { MoonIcon, SunIcon } from "lucide-react";
 
 function ThemeToggle() {
-    const [theme, setTheme] = useState(
-        localStorage.getItem("theme") || "night"
-    );
+    const [isDark, setIsDark] = useState(() => {
+        const saved = localStorage.getItem("theme");
+        return saved ? saved === "night" : true; // Default to night
+    });
 
     useEffect(() => {
+        const theme = isDark ? "night" : "winter";
         const root = window.document.documentElement;
         root.setAttribute("data-theme", theme);
         localStorage.setItem("theme", theme);
-    }, [theme]);
+
+        // Update body background specifically for smoother transitions if needed
+        if (isDark) {
+            root.classList.add("dark");
+        } else {
+            root.classList.remove("dark");
+        }
+    }, [isDark]);
 
     return (
-        <div className="dropdown dropdown-end">
-            <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
-                <div className="indicator">
-                    <PaletteIcon className="size-5" />
-                </div>
+        <button
+            onClick={() => setIsDark(!isDark)}
+            className="btn btn-ghost btn-circle transition-all duration-500 hover:bg-primary/10 group relative overflow-hidden"
+            aria-label="Toggle Theme"
+        >
+            <div className="relative size-6 flex items-center justify-center">
+                {/* Sun Icon */}
+                <SunIcon
+                    className={`absolute size-5 text-amber-500 transition-all duration-500 transform ${isDark ? "translate-y-10 opacity-0 rotate-90" : "translate-y-0 opacity-100 rotate-0"
+                        }`}
+                />
+
+                {/* Moon Icon */}
+                <MoonIcon
+                    className={`absolute size-5 text-indigo-400 transition-all duration-500 transform ${isDark ? "translate-y-0 opacity-100 rotate-0" : "-translate-y-10 opacity-0 -rotate-90"
+                        }`}
+                />
             </div>
-            <ul
-                tabIndex={0}
-                className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow-2xl bg-base-200 rounded-box w-52 border border-white/10 backdrop-blur-xl"
-            >
-                <div className="px-4 py-2 text-xs font-bold uppercase tracking-widest text-base-content/40">
-                    Select Theme
-                </div>
-                {themes.map((t) => (
-                    <li key={t.name}>
-                        <button
-                            className={`flex items-center justify-between py-3 ${theme === t.name ? "bg-primary/10 text-primary font-bold" : ""}`}
-                            onClick={() => setTheme(t.name)}
-                        >
-                            <div className="flex items-center gap-3">
-                                <t.icon className="size-4" />
-                                {t.label}
-                            </div>
-                            {theme === t.name && <div className="size-2 rounded-full bg-primary animate-pulse" />}
-                        </button>
-                    </li>
-                ))}
-            </ul>
-        </div>
+
+            {/* Hover effect glow */}
+            <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none bg-gradient-to-tr ${isDark ? "from-indigo-500/20 to-purple-500/20" : "from-amber-500/20 to-orange-500/20"
+                }`} />
+        </button>
     );
 }
 
 export default ThemeToggle;
+

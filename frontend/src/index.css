@@ -85,6 +85,15 @@
   --str-chat__text-color: var(--bc);
 }
 
+.stream-chat-light {
+  --str-chat__primary-color: var(--p);
+  --str-chat__active-primary-color: var(--p);
+  --str-chat__surface-color: var(--b1);
+  --str-chat__secondary-surface-color: var(--b2);
+  --str-chat__border-radius-base: 16px;
+  --str-chat__text-color: var(--bc);
+}
+
 /* Custom DaisyUI overrides for better visibility */
 [data-theme="night"] {
   --bc: 220 14% 96%; /* Brighten base content for night theme */

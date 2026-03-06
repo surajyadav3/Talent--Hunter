@@ -17,5 +17,7 @@ export const useUserStatus = () => {
             return response.data;
         },
         enabled: !!userId,
+        staleTime: 60_000,           // User status rarely changes — fresh for 1 minute
+        refetchOnWindowFocus: false,
     });
 };
