@@ -1,24 +1,31 @@
 import { useUser } from "@clerk/clerk-react";
-import { Navigate, Route, Routes } from "react-router";
+import { Navigate, Route, Routes, useLocation } from "react-router";
 import { lazy, Suspense } from "react";
 import { Toaster } from "react-hot-toast";
 
 import SyncAuth from "./components/SyncAuth";
 
+import { useAppAuth } from "./hooks/useAppAuth";
+
 // Lazy load pages
-const HomePage = lazy(() => import("./pages/HomePage"));
 const DashboardPage = lazy(() => import("./pages/DashboardPage"));
 const ProblemPage = lazy(() => import("./pages/ProblemPage"));
 const ProblemsPage = lazy(() => import("./pages/ProblemsPage"));
 const LeaderboardPage = lazy(() => import("./pages/LeaderboardPage"));
 const SessionPage = lazy(() => import("./pages/SessionPage"));
 const PricingPage = lazy(() => import("./pages/PricingPage"));
+const HomePage = lazy(() => import("./pages/HomePage"));
+const AdminLoginPage = lazy(() => import("./pages/AdminLoginPage"));
+const RoleSelectionPage = lazy(() => import("./pages/RoleSelectionPage"));
 
 function App() {
-  const { isSignedIn, isLoaded } = useUser();
+  const { user, isAdmin, isLoading } = useAppAuth();
+  const { isLoaded: clerkLoaded } = useUser();
 
-  // this will provide a cleaner transition
-  if (!isLoaded) return null;
+  if (isLoading || !clerkLoaded) return null;
+
+  const isAuthenticated = !!user;
+  const needsRole = isAuthenticated && user?.role === "user";
 
   return (
     <>
@@ -29,14 +36,17 @@ function App() {
         </div>
       }>
         <Routes>
-          <Route path="/" element={!isSignedIn ? <HomePage /> : <Navigate to={"/dashboard"} />} />
-          <Route path="/dashboard" element={isSignedIn ? <DashboardPage /> : <Navigate to={"/"} />} />
+          <Route path="/" element={!isAuthenticated ? <HomePage /> : needsRole ? <Navigate to="/role-selection" /> : <Navigate to={"/dashboard"} />} />
+          <Route path="/admin/login" element={!isAuthenticated ? <AdminLoginPage /> : <Navigate to={"/dashboard"} />} />
+          
+          <Route path="/role-selection" element={!isAuthenticated ? <Navigate to="/" /> : needsRole ? <RoleSelectionPage /> : <Navigate to="/dashboard" />} />
 
-          <Route path="/problems" element={isSignedIn ? <ProblemsPage /> : <Navigate to={"/"} />} />
-          <Route path="/leaderboard" element={isSignedIn ? <LeaderboardPage /> : <Navigate to={"/"} />} />
-          <Route path="/problem/:id" element={isSignedIn ? <ProblemPage /> : <Navigate to={"/"} />} />
-          <Route path="/session/:id" element={isSignedIn ? <SessionPage /> : <Navigate to={"/"} />} />
-          <Route path="/pricing" element={isSignedIn ? <PricingPage /> : <Navigate to={"/"} />} />
+          <Route path="/dashboard" element={isAuthenticated ? (needsRole ? <Navigate to="/role-selection" /> : <DashboardPage />) : <Navigate to={"/"} />} />
+          <Route path="/problems" element={isAuthenticated ? (needsRole ? <Navigate to="/role-selection" /> : <ProblemsPage />) : <Navigate to={"/"} />} />
+          <Route path="/leaderboard" element={isAuthenticated ? (needsRole ? <Navigate to="/role-selection" /> : <LeaderboardPage />) : <Navigate to={"/"} />} />
+          <Route path="/problem/:id" element={isAuthenticated ? (needsRole ? <Navigate to="/role-selection" /> : <ProblemPage />) : <Navigate to={"/"} />} />
+          <Route path="/session/:id" element={isAuthenticated ? (needsRole ? <Navigate to="/role-selection" /> : <SessionPage />) : <Navigate to={"/"} />} />
+          <Route path="/pricing" element={isAuthenticated ? (needsRole ? <Navigate to="/role-selection" /> : <PricingPage />) : <Navigate to={"/"} />} />
         </Routes>
       </Suspense>
 

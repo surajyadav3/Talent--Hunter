@@ -3,14 +3,15 @@ import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams, useBlocker } from "react-router";
 import { useEndSession, useJoinSession, useSessionById } from "../hooks/useSessions";
 import { PROBLEMS } from "../data/problems";
-import { executeCode } from "../lib/piston";
+import axiosInstance from "../lib/axios";
 import Navbar from "../components/Navbar";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { getDifficultyBadgeClass } from "../lib/utils";
-import { Loader2Icon, LogOutIcon, MessageSquareIcon, PhoneOffIcon, UserPlusIcon, XIcon, UsersIcon } from "lucide-react";
+import { Loader2Icon, LogOutIcon, MessageSquareIcon, PhoneOffIcon, UserPlusIcon, XIcon, UsersIcon, MailIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import CodeEditorPanel from "../components/CodeEditorPanel";
 import OutputPanel from "../components/OutputPanel";
+import InviteStudentModal from "../components/InviteStudentModal";
 
 import useStreamClient from "../hooks/useStreamClient";
 import { StreamCall, StreamVideo } from "@stream-io/video-react-sdk";
@@ -52,6 +53,7 @@ function SessionPage() {
     const [unreadMessages, setUnreadMessages] = useState(0);
     const [sessionSubmitted, setSessionSubmitted] = useState(false);
     const [timeLeft, setTimeLeft] = useState(180); // 3 minutes in seconds
+    const [showInviteModal, setShowInviteModal] = useState(false);
 
     // auto-join session if user is not already a participant and not the host
     useEffect(() => {
@@ -131,33 +133,21 @@ function SessionPage() {
     const handleRunCode = useCallback(async () => {
         setIsRunning(true);
 
-        let codeToRun = code;
-        const starter = problemData?.starterCode?.[selectedLanguage] || "";
-
-        // Check if user has print/console.log or if test cases are already there
-        const hasPrint = code.includes("console.log") || code.includes("print(") || code.includes("System.out.print");
-
-        if (!hasPrint) {
-            const markers = {
-                javascript: "// Test cases",
-                python: "# Test cases",
-                java: "public static void main"
-            };
-            const marker = markers[selectedLanguage];
-            const markerIndex = starter.indexOf(marker);
-
-            if (markerIndex !== -1) {
-                // For Java, we need to be careful not to duplicate the class, but for simplicity:
-                codeToRun += "\n\n" + starter.slice(markerIndex);
-            }
-        }
-
         try {
-            const result = await executeCode(selectedLanguage, codeToRun);
-            setOutput(result);
+            const { data } = await axiosInstance.post('/submission/run', {
+                code: code,
+                language: selectedLanguage,
+                problemId: problemData?.problemId
+            });
+            setOutput(data);
         } catch (error) {
             console.error("Run error:", error);
             toast.error("Failed to execute code");
+            setOutput({
+                 verdict: "Server Error",
+                 error: error.response?.data?.message || error.message,
+                 results: []
+            });
         } finally {
             setIsRunning(false);
         }
@@ -195,31 +185,29 @@ function SessionPage() {
     const handleSubmitCode = async () => {
         setIsRunning(true);
         try {
-            const result = await executeCode(selectedLanguage, code);
-            setOutput(result);
+            const { data } = await axiosInstance.post('/submission/submit', {
+                code: code,
+                language: selectedLanguage,
+                problemId: problemData?.problemId
+            });
+            setOutput(data);
 
-            // Simple validation: check if execution was successful AND passed test cases (heuristically)
-            // Ideally we need to parse the output to check "Expected: X" vs actual.
-            // The OutputPanel does this visually.
-            // For now, if "success" is true, we assume it ran.
-
-            // To be stricter, check if user logic passed all tests.
-            // But since OutputPanel parses the output, we might want to defer this check or improve 'executeCode' response to include test results.
-            // For this iteration, we keep the simple confirmation.
-
-            if (result.success) {
-                // Check if output contains any sign of failure if possible, but executeCode returns raw output.
-                // We will trust the user finds the "All Test Cases Passed" message in OutputPanel.
-                if (confirm("Code compiled successfully! Do you want to submit and start the 3-minute cooldown?")) {
+            if (data.verdict === "Accepted") {
+                if (confirm("Code compiled successfully and all tests passed! Do you want to submit and start the 3-minute cooldown?")) {
                     setSessionSubmitted(true);
                     toast.success("Solution correct! Session will end in 3 minutes.");
                 }
             } else {
-                toast.error("Code compilation failed or has errors.");
+                toast.error(`Testing failed: ${data.verdict}`);
             }
         } catch (error) {
             console.error("Submission error:", error);
             toast.error("Execution failed");
+            setOutput({
+                 verdict: "Server Error",
+                 error: error.response?.data?.message || error.message,
+                 results: []
+            });
         } finally {
             setIsRunning(false);
         }
@@ -363,11 +351,17 @@ function SessionPage() {
                                                 <span className={`badge badge-lg ${getDifficultyBadgeClass(session?.difficulty)}`}>
                                                     {session?.difficulty?.slice(0, 1).toUpperCase() + session?.difficulty?.slice(1) || "Easy"}
                                                 </span>
-                                                {!session?.participant && (
-                                                    <button onClick={handleCopyInviteLink} className="btn btn-ghost btn-sm gap-2">
-                                                        <UserPlusIcon className="w-4 h-4" />
-                                                        Invite
-                                                    </button>
+                                                {!session?.participant && isHost && (
+                                                    <div className="flex gap-2">
+                                                        <button onClick={handleCopyInviteLink} className="btn btn-ghost btn-sm gap-2">
+                                                            <UserPlusIcon className="w-4 h-4" />
+                                                            Copy
+                                                        </button>
+                                                        <button onClick={() => setShowInviteModal(true)} className="btn btn-primary btn-sm gap-2">
+                                                            <MailIcon className="w-4 h-4" />
+                                                            Email Invite
+                                                        </button>
+                                                    </div>
                                                 )}
                                                 {isHost && session?.status === "active" && (
                                                     <button onClick={handleEndSession} disabled={endSessionMutation.isPending} className="btn btn-error btn-sm gap-2">
@@ -466,13 +460,17 @@ function SessionPage() {
                                             readOnly={isHost}
                                         />
                                     </Panel>
-                                    <PanelResizeHandle className="h-2 bg-base-300 hover:bg-primary transition-colors cursor-row-resize" />
+                                    <PanelResizeHandle className="h-2 hover:bg-[#3e3e3e] rounded transition-colors cursor-row-resize flex justify-center items-center">
+                                         <div className="w-6 h-0.5 bg-[#3e3e3e] rounded-full"></div>
+                                    </PanelResizeHandle>
                                     <Panel defaultSize={30} minSize={15}>
-                                        <OutputPanel
-                                            output={output}
-                                            expectedOutput={problemData?.expectedOutput?.[selectedLanguage]}
-                                            testCases={problemData?.examples}
-                                        />
+                                        <div className="h-full bg-[#282828] rounded-lg overflow-hidden border border-[#3e3e3e]">
+                                            <OutputPanel
+                                                output={output}
+                                                expectedOutput={problemData?.expectedOutput?.[selectedLanguage]}
+                                                testCases={problemData?.examples}
+                                            />
+                                        </div>
                                     </Panel>
                                 </PanelGroup>
                             </Panel>
@@ -549,6 +547,12 @@ function SessionPage() {
                     </button>
                 </div>
             )}
+            {/* MODALS */}
+            <InviteStudentModal
+                isOpen={showInviteModal}
+                onClose={() => setShowInviteModal(false)}
+                sessionId={id}
+            />
         </div>
     );
 }

@@ -1,17 +1,17 @@
 import { Link, useLocation } from "react-router";
-import { BookOpenIcon, LayoutDashboardIcon, SparklesIcon, TrophyIcon, CreditCardIcon, MedalIcon, BarChart3Icon } from "lucide-react";
+import { BookOpenIcon, LayoutDashboardIcon, SparklesIcon, TrophyIcon, UserCircleIcon, LogOutIcon } from "lucide-react";
 import { UserButton, SignInButton, SignedIn, SignedOut } from "@clerk/clerk-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { sessionApi } from "../api/sessions";
-
+import { useAppAuth } from "../hooks/useAppAuth";
 import ThemeToggle from "./ThemeToggle";
 
 function Navbar({ isInSession, isParticipant, sessionActive }) {
+    const { user, isAdmin, logout: adminLogout } = useAppAuth();
     const location = useLocation();
     const queryClient = useQueryClient();
 
     const isActive = (path) => location.pathname === path;
-
     const isBlocked = isInSession && isParticipant && sessionActive;
 
     const navLinkClass = (path) => `
@@ -23,7 +23,6 @@ function Navbar({ isInSession, isParticipant, sessionActive }) {
         ${isBlocked ? "opacity-50 cursor-not-allowed pointer-events-none" : "cursor-pointer"}
     `;
 
-    // Optimization: Prefetch dashboard data on hover
     const prefetchDashboard = () => {
         if (!isBlocked && !isActive("/dashboard")) {
             queryClient.prefetchQuery({
@@ -31,21 +30,14 @@ function Navbar({ isInSession, isParticipant, sessionActive }) {
                 queryFn: sessionApi.getActiveSessions,
                 staleTime: 5000,
             });
-            queryClient.prefetchQuery({
-                queryKey: ["myRecentSessions"],
-                queryFn: sessionApi.getMyRecentSessions,
-                staleTime: 5000,
-            });
         }
     };
 
     return (
         <nav className="bg-base-100/60 backdrop-blur-xl border-b border-white/5 sticky top-0 z-50 shadow-2xl overflow-hidden">
-            {/* Top accent line */}
             <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-50"></div>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-                {/* LOGO */}
                 <Link
                     to={isBlocked ? "#" : "/"}
                     className={`group flex items-center gap-3 active:scale-95 transition-all duration-200 ${isBlocked ? "pointer-events-none" : ""}`}
@@ -63,44 +55,27 @@ function Navbar({ isInSession, isParticipant, sessionActive }) {
                 </Link>
 
                 <div className="flex items-center gap-2">
-                    {/* PROBLEMS PAGE LINK */}
-                    <Link
-                        to={isBlocked ? "#" : "/problems"}
-                        className={navLinkClass("/problems")}
-                    >
+                    <Link to={isBlocked ? "#" : "/problems"} className={navLinkClass("/problems")}>
                         <BookOpenIcon className={`size-4 ${isActive("/problems") ? "text-primary" : ""}`} />
                         <span className="hidden sm:inline">Problems</span>
                     </Link>
 
-                    {/* DASHBOARD PAGE LINK */}
-                    <Link
-                        to={isBlocked ? "#" : "/dashboard"}
-                        className={navLinkClass("/dashboard")}
-                        onMouseEnter={prefetchDashboard}
-                    >
+                    <Link to={isBlocked ? "#" : "/dashboard"} className={navLinkClass("/dashboard")} onMouseEnter={prefetchDashboard}>
                         <LayoutDashboardIcon className={`size-4 ${isActive("/dashboard") ? "text-primary" : ""}`} />
                         <span className="hidden sm:inline">Dashboard</span>
                     </Link>
 
-                    {/* LEADERBOARD PAGE LINK */}
-                    <Link
-                        to={isBlocked ? "#" : "/leaderboard"}
-                        className={navLinkClass("/leaderboard")}
-                    >
+                    <Link to={isBlocked ? "#" : "/leaderboard"} className={navLinkClass("/leaderboard")}>
                         <TrophyIcon className={`size-4 ${isActive("/leaderboard") ? "text-primary" : ""}`} />
                         <span className="hidden sm:inline">Leaderboard</span>
                     </Link>
 
-                    {/* PRICING PAGE LINK */}
-                    <Link
-                        to={isBlocked ? "#" : "/pricing"}
-                        className={navLinkClass("/pricing")}
-                    >
-                        <SparklesIcon className={`size-4 ${isActive("/pricing") ? "text-primary" : "text-amber-500"}`} />
-                        <span className="hidden sm:inline">Premium</span>
-                    </Link>
-
                     <SignedOut>
+                        {!user && (
+                            <Link to="/admin/login" className="text-xs opacity-50 hover:opacity-100 transition-opacity mr-2">
+                                Admin?
+                            </Link>
+                        )}
                         <SignInButton mode="modal">
                             <button className="btn btn-primary btn-sm rounded-lg shadow-lg shadow-primary/20 hover:scale-105 transition-all ml-1">
                                 Get Started
@@ -110,9 +85,24 @@ function Navbar({ isInSession, isParticipant, sessionActive }) {
 
                     <div className="ml-2 pl-2 border-l border-white/10 flex items-center gap-2">
                         <ThemeToggle />
+                        
+                        {isAdmin && (
+                            <div className="badge badge-primary badge-sm font-black animate-pulse">ADMIN</div>
+                        )}
+
                         <SignedIn>
                             <UserButton />
                         </SignedIn>
+
+                        {user && !location.pathname.includes("session") && (
+                            <button 
+                                onClick={adminLogout} 
+                                className="btn btn-ghost btn-sm btn-circle tooltip tooltip-bottom" 
+                                data-tip="Admin Logout"
+                            >
+                                <LogOutIcon className="size-4 opacity-50" />
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>

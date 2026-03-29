@@ -1,12 +1,11 @@
-import { useUser } from "@clerk/clerk-react";
-import { ArrowRightIcon, SparklesIcon, ZapIcon } from "lucide-react";
+import { SparklesIcon, ZapIcon, ArrowRightIcon } from "lucide-react";
+import { useAppAuth } from "../hooks/useAppAuth";
 
 function WelcomeSection({ onCreateSession }) {
-    const { user } = useUser();
+    const { user, isAdmin } = useAppAuth();
 
     return (
         <div className="relative overflow-hidden">
-            {/* Background Orbs */}
             <div className="absolute top-0 -left-4 w-72 h-72 bg-primary/20 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
             <div className="absolute top-0 -right-4 w-72 h-72 bg-secondary/20 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
 
@@ -18,23 +17,29 @@ function WelcomeSection({ onCreateSession }) {
                                 <SparklesIcon className="w-6 h-6 text-white" />
                             </div>
                             <h1 className="text-5xl font-black bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                                Welcome back, {user?.firstName || "there"}!
+                                Welcome back, {user?.name?.split(" ")[0] || "there"}!
                             </h1>
                         </div>
                         <p className="text-xl text-base-content/60 ml-16">
-                            Ready to level up your coding skills?
+                            {isAdmin || user?.role === "recruiter" ? "Create an interview session to evaluate candidates." : "Ready to level up your coding skills?"}
                         </p>
                     </div>
-                    <button
-                        onClick={onCreateSession}
-                        className="group px-8 py-4 bg-gradient-to-r from-primary to-secondary rounded-2xl transition-all duration-200 hover:opacity-90"
-                    >
-                        <div className="flex items-center gap-3 text-white font-bold text-lg">
-                            <ZapIcon className="w-6 h-6" />
-                            <span>Create Session</span>
-                            <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    {isAdmin || user?.role === "recruiter" ? (
+                        <button
+                            onClick={onCreateSession}
+                            className="group px-8 py-4 bg-gradient-to-r from-primary to-secondary rounded-2xl transition-all duration-200 hover:opacity-90 shadow-xl shadow-primary/20"
+                        >
+                            <div className="flex items-center gap-3 text-white font-bold text-lg">
+                                <ZapIcon className="w-6 h-6" />
+                                <span>Create Session</span>
+                                <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                            </div>
+                        </button>
+                    ) : (
+                        <div className="bg-base-200/50 backdrop-blur-sm border border-base-content/5 p-4 rounded-xl">
+                            <p className="text-sm opacity-60 italic">Students can join sessions via invite links</p>
                         </div>
-                    </button>
+                    )}
                 </div>
             </div>
         </div>

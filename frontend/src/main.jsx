@@ -51,11 +51,15 @@ const queryClient = new QueryClient({
 
 const router = createBrowserRouter([{ path: "*", element: <App /> }]);
 
+import { AuthProvider } from "./hooks/useAppAuth.jsx";
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
-        <RouterProvider router={router} />
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
       </ClerkProvider>
     </QueryClientProvider>
   </StrictMode>
