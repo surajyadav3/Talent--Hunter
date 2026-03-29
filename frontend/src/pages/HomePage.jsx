@@ -62,8 +62,19 @@ function HomePage() {
                 {/* CTA Buttons */}
                 <div className="flex flex-wrap gap-4 pt-4">
                   <SignInButton mode="modal">
-                    <button className="btn btn-primary btn-lg shadow-xl shadow-primary/20 group hover:scale-105 transition-all">
-                      Start Coding Now
+                    <button 
+                      onClick={() => localStorage.setItem("intentRole", "candidate")}
+                      className="btn btn-primary btn-lg shadow-xl shadow-primary/20 group hover:scale-105 transition-all">
+                      Join as Candidate
+                      <ArrowRightIcon className="size-5 group-hover:translate-x-1 transition-transform" />
+                    </button>
+                  </SignInButton>
+
+                  <SignInButton mode="modal">
+                    <button 
+                      onClick={() => localStorage.setItem("intentRole", "recruiter")}
+                      className="btn btn-secondary btn-lg shadow-xl shadow-secondary/20 group hover:scale-105 transition-all">
+                      Join as Recruiter
                       <ArrowRightIcon className="size-5 group-hover:translate-x-1 transition-transform" />
                     </button>
                   </SignInButton>
@@ -160,16 +171,25 @@ function HomePage() {
                 </div>
               </div>
 
-              <div className="pt-4">
+              <div className="pt-4 flex justify-center gap-4 flex-wrap">
                 <SignInButton mode="modal">
-                  <button className="btn btn-primary btn-lg rounded-2xl shadow-xl shadow-primary/20 hover:scale-105 transition-all px-12">
-                    Get Started Now
+                  <button 
+                    onClick={() => localStorage.setItem("intentRole", "candidate")}
+                    className="btn btn-primary btn-lg rounded-2xl shadow-xl shadow-primary/20 hover:scale-105 transition-all px-8">
+                    Candidate Sign Up
                   </button>
                 </SignInButton>
-                <p className="text-[10px] uppercase font-bold text-base-content/30 mt-4 tracking-widest">
-                  Join 10,000+ developers today
-                </p>
+                <SignInButton mode="modal">
+                  <button 
+                    onClick={() => localStorage.setItem("intentRole", "recruiter")}
+                    className="btn btn-secondary btn-lg rounded-2xl shadow-xl shadow-secondary/20 hover:scale-105 transition-all px-8">
+                    Recruiter Sign Up
+                  </button>
+                </SignInButton>
               </div>
+              <p className="text-[10px] uppercase font-bold text-base-content/30 mt-4 tracking-widest text-center">
+                  Join 10,000+ developers today
+              </p>
             </div>
           </div>
         </div>

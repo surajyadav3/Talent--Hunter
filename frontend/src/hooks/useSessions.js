@@ -1,6 +1,21 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { sessionApi } from "../api/sessions";
+import { sessionApi, userApi } from "../api/sessions";
+
+export const useInviteStudent = () => {
+    return useMutation({
+        mutationFn: sessionApi.inviteStudent,
+        onSuccess: (data) => toast.success(data.message),
+        onError: (error) => toast.error(error.response?.data?.message || "Failed to send invitation"),
+    });
+};
+
+export const useAllStudents = () => {
+    return useQuery({
+        queryKey: ["students"],
+        queryFn: userApi.getAllStudents,
+    });
+};
 
 export const useCreateSession = () => {
     const queryClient = useQueryClient();

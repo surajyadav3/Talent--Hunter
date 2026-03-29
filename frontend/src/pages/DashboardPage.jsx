@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import { useUser } from "@clerk/clerk-react";
+import { useAppAuth } from "../hooks/useAppAuth";
 import { useState } from "react";
 import { useActiveSessions, useCreateSession, useMyRecentSessions } from "../hooks/useSessions";
 import toast from "react-hot-toast";
@@ -13,7 +13,7 @@ import CreateSessionModal from "../components/CreateSessionModal";
 
 function DashboardPage() {
   const navigate = useNavigate();
-  const { user } = useUser();
+  const { user, isAdmin } = useAppAuth();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [roomConfig, setRoomConfig] = useState({ problem: "", difficulty: "" });
 
@@ -65,7 +65,7 @@ function DashboardPage() {
         <Navbar />
         <WelcomeSection onCreateSession={() => setShowCreateModal(true)} />
 
-        {/* Grid layout */}
+        {/* Dashboard Sections */}
         <div className="container mx-auto px-6 pb-16">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <StatsCards
@@ -77,9 +77,8 @@ function DashboardPage() {
               isLoading={loadingActiveSessions}
               isUserInSession={isUserInSession}
             />
+            <RecentSessions sessions={recentSessions} isLoading={loadingRecentSessions} />
           </div>
-
-          <RecentSessions sessions={recentSessions} isLoading={loadingRecentSessions} />
         </div>
       </div>
 

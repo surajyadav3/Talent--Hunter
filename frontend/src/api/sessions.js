@@ -28,8 +28,19 @@ export const sessionApi = {
         const response = await axiosInstance.post(`/sessions/${id}/end`);
         return response.data;
     },
+    inviteStudent: async ({ sessionId, studentEmail }) => {
+        const response = await axiosInstance.post(`/sessions/${sessionId}/invite`, { studentEmail });
+        return response.data;
+    },
     getStreamToken: async () => {
         const response = await axiosInstance.get(`/chat/token`);
+        return response.data;
+    },
+};
+
+export const userApi = {
+    getAllStudents: async () => {
+        const response = await axiosInstance.get("/users/students");
         return response.data;
     },
 };
