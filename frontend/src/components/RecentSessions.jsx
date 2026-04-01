@@ -1,16 +1,20 @@
 import { Code2, Clock, Users, Trophy, Loader } from "lucide-react";
 import { getDifficultyBadgeClass } from "../lib/utils";
 import { formatDistanceToNow } from "date-fns";
+import { useAppAuth } from "../hooks/useAppAuth";
 
 function RecentSessions({ sessions, isLoading }) {
+    const { user, isAdmin } = useAppAuth();
+    const isRecruiter = isAdmin || user?.role === "recruiter";
+
     return (
-        <div className="card bg-base-100 border-2 border-accent/20 hover:border-accent/30 mt-8">
+        <div className="card bg-base-100 border-2 border-accent/10 hover:border-accent/20 mt-8">
             <div className="card-body">
                 <div className="flex items-center gap-3 mb-6">
                     <div className="p-2 bg-gradient-to-br from-accent to-secondary rounded-xl">
                         <Clock className="w-5 h-5 text-white" />
                     </div>
-                    <h2 className="text-2xl font-black">Your Past Sessions</h2>
+                    <h2 className="text-2xl font-black">{isRecruiter ? "Interviews History" : "Your Past Sessions"}</h2>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -77,7 +81,7 @@ function RecentSessions({ sessions, isLoading }) {
                                     <div className="flex items-center justify-between pt-3 border-t border-base-300">
                                         <span className="text-xs font-semibold opacity-80 uppercase">Completed</span>
                                         <span className="text-xs opacity-40">
-                                            {new Date(session.updatedAt).toLocaleDateString()}
+                                            {new Date(session.updatedAt).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
                                         </span>
                                     </div>
                                 </div>

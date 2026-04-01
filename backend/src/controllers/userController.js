@@ -64,14 +64,19 @@ export const getAllStudents = async (req, res) => {
 
 export const setRole = async (req, res) => {
     try {
-        const { role } = req.body;
+        const { role, name, mobileNo } = req.body;
         const validRoles = ["recruiter", "candidate"];
         if (!validRoles.includes(role)) {
             return res.status(400).json({ message: "Invalid role selection" });
         }
+        
+        const updateData = { role, roleSelected: true };
+        if (name) updateData.name = name;
+        if (mobileNo) updateData.mobileNo = mobileNo;
+
         const user = await User.findByIdAndUpdate(
             req.user._id,
-            { role, roleSelected: true },
+            updateData,
             { new: true }
         ).lean();
         if (!user) return res.status(404).json({ message: "User not found" });

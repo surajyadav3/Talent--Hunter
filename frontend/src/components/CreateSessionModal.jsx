@@ -64,6 +64,26 @@ function CreateSessionModal({
                             </div>
                         </div>
                     )}
+
+                    {/* OPTIONAL INVITE */}
+                    <div className="space-y-4 pt-4 border-t border-base-content/10">
+                        <label className="label">
+                            <span className="label-text font-bold text-base">Invite Candidate (Optional)</span>
+                        </label>
+                        <div className="flex gap-2">
+                            <div className="relative flex-1">
+                                <PlusIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 opacity-40" />
+                                <input 
+                                    type="email" 
+                                    placeholder="candidate@example.com" 
+                                    className="input input-bordered w-full pl-10"
+                                    value={roomConfig.inviteEmail || ""}
+                                    onChange={(e) => setRoomConfig({ ...roomConfig, inviteEmail: e.target.value })}
+                                />
+                            </div>
+                        </div>
+                        <p className="text-[10px] opacity-40 italic">An invitation link will be sent automatically if provided.</p>
+                    </div>
                 </div>
 
                 <div className="modal-action">

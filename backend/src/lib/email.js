@@ -13,12 +13,12 @@ export const sendInviteEmail = async (studentEmail, sessionLink, sessionName, ho
     const mailOptions = {
         from: `"Talent Hunter" <${ENV.GMAIL_USER}>`,
         to: studentEmail,
-        subject: `Interview Invitation: ${sessionName}`,
+        subject: `Technical Interview Invitation`,
         html: `
             <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
                 <h2 style="color: #2563eb;">Interview Invitation</h2>
                 <p>Hello,</p>
-                <p>You have been invited to a session <strong>${sessionName}</strong> by <strong>${hostName}</strong> on the Talent-Hunter platform.</p>
+                <p>You have been invited to a technical interview by <strong>${hostName}</strong> on the Talent Hunter platform.</p>
                 <div style="text-align: center; margin: 30px 0;">
                     <a href="${sessionLink}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">
                         Connect to Session
