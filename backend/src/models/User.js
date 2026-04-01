@@ -14,6 +14,9 @@ const userSchema = new mongoose.Schema({
           type: String,
           default: ""
      },
+     mobileNo: {
+          type: String,
+     },
      problemsSolved: {
           type: Number,
           default: 0

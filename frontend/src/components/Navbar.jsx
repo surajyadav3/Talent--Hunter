@@ -6,7 +6,7 @@ import { sessionApi } from "../api/sessions";
 import { useAppAuth } from "../hooks/useAppAuth";
 import ThemeToggle from "./ThemeToggle";
 
-function Navbar({ isInSession, isParticipant, sessionActive }) {
+function Navbar({ isInSession, isParticipant, sessionActive, onStartOnboarding }) {
     const { user, isAdmin, logout: adminLogout } = useAppAuth();
     const location = useLocation();
     const queryClient = useQueryClient();
@@ -55,32 +55,55 @@ function Navbar({ isInSession, isParticipant, sessionActive }) {
                 </Link>
 
                 <div className="flex items-center gap-2">
-                    <Link to={isBlocked ? "#" : "/problems"} className={navLinkClass("/problems")}>
-                        <BookOpenIcon className={`size-4 ${isActive("/problems") ? "text-primary" : ""}`} />
-                        <span className="hidden sm:inline">Problems</span>
-                    </Link>
+                    <SignedIn>
+                        <Link to={isBlocked ? "#" : "/problems"} className={navLinkClass("/problems")}>
+                            <BookOpenIcon className={`size-4 ${isActive("/problems") ? "text-primary" : ""}`} />
+                            <span className="hidden sm:inline">Problems</span>
+                        </Link>
 
-                    <Link to={isBlocked ? "#" : "/dashboard"} className={navLinkClass("/dashboard")} onMouseEnter={prefetchDashboard}>
-                        <LayoutDashboardIcon className={`size-4 ${isActive("/dashboard") ? "text-primary" : ""}`} />
-                        <span className="hidden sm:inline">Dashboard</span>
-                    </Link>
+                        <Link to={isBlocked ? "#" : "/dashboard"} className={navLinkClass("/dashboard")} onMouseEnter={prefetchDashboard}>
+                            <LayoutDashboardIcon className={`size-4 ${isActive("/dashboard") ? "text-primary" : ""}`} />
+                            <span className="hidden sm:inline">Dashboard</span>
+                        </Link>
 
-                    <Link to={isBlocked ? "#" : "/leaderboard"} className={navLinkClass("/leaderboard")}>
-                        <TrophyIcon className={`size-4 ${isActive("/leaderboard") ? "text-primary" : ""}`} />
-                        <span className="hidden sm:inline">Leaderboard</span>
-                    </Link>
+                        <Link to={isBlocked ? "#" : "/leaderboard"} className={navLinkClass("/leaderboard")}>
+                            <TrophyIcon className={`size-4 ${isActive("/leaderboard") ? "text-primary" : ""}`} />
+                            <span className="hidden sm:inline">Leaderboard</span>
+                        </Link>
+                    </SignedIn>
 
                     <SignedOut>
-                        {!user && (
-                            <Link to="/admin/login" className="text-xs opacity-50 hover:opacity-100 transition-opacity mr-2">
-                                Admin?
-                            </Link>
-                        )}
-                        <SignInButton mode="modal">
-                            <button className="btn btn-primary btn-sm rounded-lg shadow-lg shadow-primary/20 hover:scale-105 transition-all ml-1">
+                        <div className="flex items-center gap-2">
+                             {location.pathname === "/" && (
+                                <>
+                                    <button 
+                                        onClick={() => onStartOnboarding?.("candidate")}
+                                        className="btn btn-ghost btn-sm text-xs font-bold uppercase tracking-widest opacity-60 hover:opacity-100 hover:bg-transparent"
+                                    >
+                                        Candidate
+                                    </button>
+                                    <button 
+                                        onClick={() => onStartOnboarding?.("recruiter")}
+                                        className="btn btn-ghost btn-sm text-xs font-bold uppercase tracking-widest opacity-60 hover:opacity-100 hover:bg-transparent"
+                                    >
+                                        Recruiter
+                                    </button>
+                                </>
+                             )}
+                             
+                            <button 
+                                onClick={() => {
+                                    if (location.pathname === "/") {
+                                        onStartOnboarding?.("candidate");
+                                    } else {
+                                        window.location.href = "/";
+                                    }
+                                }}
+                                className="btn btn-primary btn-sm rounded-lg shadow-lg shadow-primary/20 hover:scale-105 transition-all ml-2"
+                            >
                                 Get Started
                             </button>
-                        </SignInButton>
+                        </div>
                     </SignedOut>
 
                     <div className="ml-2 pl-2 border-l border-white/10 flex items-center gap-2">

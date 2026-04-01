@@ -30,7 +30,10 @@ function RoleSelectionPage() {
                 // If we are signed in but getToken is null, it might be a provider delay
             }
             
-            await axiosInstance.post("/users/set-role", { role: targetRole });
+            await axiosInstance.post("/users/set-role", { 
+                role: targetRole,
+            });
+            
             toast.success(`Welcome to Talent-Hunter as a ${targetRole}!`);
             
             // Force a slight delay to allow backend to update and local state to sync

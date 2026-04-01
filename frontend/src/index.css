@@ -4,8 +4,11 @@
   themes: all;
 }
 
-/* Add cursor pointer to buttons by default */
 @layer base {
+  :root {
+    --primary-glow: color-mix(in srgb, var(--p) 20%, transparent);
+    --secondary-glow: color-mix(in srgb, var(--s) 20%, transparent);
+  }
 
   button:not(:disabled),
   [role="button"]:not(:disabled) {
@@ -19,7 +22,7 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply tracking-tight;
+    @apply tracking-tight font-bold;
   }
 }
 
@@ -29,80 +32,75 @@
   }
 
   .glass-dark {
-    @apply bg-black/20 backdrop-blur-md border border-white/5;
+    @apply bg-black/20 backdrop-blur-lg border border-white/5;
   }
 
   .card-premium {
-    @apply bg-base-100 border border-base-300 shadow-xl transition-all duration-300 hover:shadow-2xl hover:border-primary/30;
+    @apply bg-base-100 border border-base-300 shadow-lg transition-all duration-300 
+           hover:shadow-xl hover:border-primary/20;
   }
 
-  /* Custom Scrollbar */
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+  .text-gradient {
+    @apply bg-gradient-to-br from-base-content via-base-content/80 to-base-content/60 bg-clip-text text-transparent;
   }
 
-  .custom-scrollbar::-webkit-scrollbar-track {
-    @apply bg-transparent;
+  .text-gradient-primary {
+    @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
   }
 
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-base-content/10 rounded-full hover:bg-base-content/20 transition-colors;
-  }
-
-  /* Glow effect */
   .glow-primary {
-    filter: drop-shadow(0 0 15px theme('colors.primary.DEFAULT / 40%'));
+    box-shadow: 0 0 20px var(--primary-glow);
+  }
+
+  .glow-secondary {
+    box-shadow: 0 0 20px var(--secondary-glow);
+  }
+
+  .animate-float {
+    animation: float 5s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
   }
 
   .animate-blob {
-    animation: blob 7s infinite;
+    animation: blob 15s infinite ease-in-out;
   }
 
   @keyframes blob {
-    0% { transform: translate(0px, 0px) scale(1); }
-    33% { transform: translate(30px, -50px) scale(1.1); }
-    66% { transform: translate(-20px, 20px) scale(0.9); }
-    100% { transform: translate(0px, 0px) scale(1); }
+    0% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(20px, -30px) scale(1.05); }
+    66% { transform: translate(-15px, 20px) scale(0.95); }
+    100% { transform: translate(0, 0) scale(1); }
   }
 
-  .animation-delay-2000 {
-    animation-delay: 2s;
-  }
+  .animation-delay-2000 { animation-delay: 2s; }
+  .animation-delay-4000 { animation-delay: 4s; }
 
-  .animation-delay-4000 {
-    animation-delay: 4s;
+  .bg-grid-subtle {
+    background-size: 50px 50px;
+    background-image: 
+      linear-gradient(to right, rgb(255 255 255 / 0.02) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(255 255 255 / 0.02) 1px, transparent 1px);
   }
 }
 
-/* Stream Chat Integration */
-.stream-chat-dark {
-  --str-chat__primary-color: var(--p);
-  --str-chat__active-primary-color: var(--p);
-  --str-chat__surface-color: var(--b2);
-  --str-chat__secondary-surface-color: var(--b3);
-  --str-chat__border-radius-base: 16px;
-  --str-chat__text-color: var(--bc);
+.btn-premium {
+  @apply rounded-xl font-bold transition-all duration-200 active:scale-95;
 }
 
-.stream-chat-light {
-  --str-chat__primary-color: var(--p);
-  --str-chat__active-primary-color: var(--p);
-  --str-chat__surface-color: var(--b1);
-  --str-chat__secondary-surface-color: var(--b2);
-  --str-chat__border-radius-base: 16px;
-  --str-chat__text-color: var(--bc);
+.nav-link {
+  @apply px-3 py-2 rounded-lg text-sm font-semibold transition-colors;
 }
 
-/* Custom DaisyUI overrides for better visibility */
+/* Custom Overrides for DaisyUI to work better with professional look */
+[data-theme="winter"] {
+  --p: 221 83% 53%; /* Modern Blue */
+}
+
 [data-theme="night"] {
-  --bc: 220 14% 96%; /* Brighten base content for night theme */
+  --p: 221 83% 53%; /* Match blue in dark theme */
 }
-
-.btn {
-  @apply rounded-xl font-bold;
-}
-
-.badge {
-  @apply rounded-lg font-bold;
-}
+
