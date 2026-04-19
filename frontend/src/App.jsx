@@ -2,6 +2,7 @@ import { useUser } from "@clerk/clerk-react";
 import { Navigate, Route, Routes, useLocation } from "react-router";
 import { lazy, Suspense } from "react";
 import { Toaster } from "react-hot-toast";
+import { Analytics } from "@vercel/analytics/react";
 
 import SyncAuth from "./components/SyncAuth";
 
@@ -51,6 +52,7 @@ function App() {
       </Suspense>
 
       <Toaster toastOptions={{ duration: 3000 }} />
+      <Analytics />
     </>
   );
 }
